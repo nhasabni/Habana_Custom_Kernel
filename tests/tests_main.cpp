@@ -32,6 +32,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "cast_f16_to_i16_gaudi2_test.hpp"
 #include "searchsorted_f32_test.hpp"
 #include "gather_fwd_i32_test.hpp"
+#include "normal_blend_f32_gaudi2_test.hpp"
 
 int main(int argc, char** argv)
 {
@@ -75,7 +76,9 @@ int main(int argc, char** argv)
 
             "AvgPool2DFwdF32Gaudi2Test  Run AvgPool2DFwdF32Gaudi2Test only   " << std::endl <<
             "AvgPool2DBwdF32Gaudi2Test  Run AvgPool2DBwdF32Gaudi2Test only   " << std::endl <<
-            "CastF16toI16Gaudi2Test     Run CastF16toI16Gaudi2Test only   " << std::endl;
+            "CastF16toI16Gaudi2Test     Run CastF16toI16Gaudi2Test only   " << std::endl <<
+
+            "NormalBlendF32Gaudi2Test   Run NormalBlendF32Gaudi2Test only " << std::endl;
 
         exit(0);
     }
@@ -509,6 +512,23 @@ int main(int argc, char** argv)
         castf16tpi16Gaudi2ins.SetUp();
         result = castf16tpi16Gaudi2ins.runTest();
         castf16tpi16Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    NormalBlendF32Gaudi2Test normalblendf32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"NormalBlendF32Gaudi2Test") ==0))))
+    {
+        normalblendf32Gaudi2ins.SetUp();
+        result = normalblendf32Gaudi2ins.runTest();
+        normalblendf32Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
         {
