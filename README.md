@@ -74,3 +74,58 @@ The new test core feature can be used to measure the custom kernels performance 
 
 ## Custom Ops for Tensorflow and PyTorch
 The user also can develop their own Tensorflow and PyTorch custom ops using their created TPC kernels. In this custom kernel project, we provide several custom kernel examples, such as custom_div (division), relu6_fwd/relu_fwd (relu6/relu forward path) and relu6_bwd/relu_bwd (relu6/relu backward path). Please visit [TensorFlow Custom OPs Examples](https://github.com/HabanaAI/Model-References/tree/master/TensorFlow/examples/custom_op) and [PyTorch Custom Ops Examples](https://github.com/HabanaAI/Model-References/tree/master/PyTorch/examples/custom_op/custom_relu) for more details and make sure add your custom kernel path to environment variable GC_KERNEL_PATH, like export GC_KERNEL_PATH=/path/to/your_so/libcustom_tpc_perf_lib.so:/usr/lib/habanalabs/libtpc_kernels.so.
+
+## How to Run image kernels
+
+### Normal Blend
+
+```
+$ tests/tpc_kernel_tests -t NormalBlendF32Gaudi2Test
+Kernel Input Params:
+        inputTensorNr = 2
+        inputTensors[0].float32_1DTensor[] = {256, 0, 0, 0, 0}
+        inputTensors[1].float32_1DTensor[] = {256, 0, 0, 0, 0}
+        outputTensorNr = 1
+        outputTensors[0].float32_1DTensor[] = {256, 0, 0, 0, 0}
+        debugFlags = 0
+
+Glue code outputs:
+        indexSpaceGeometry.dims  = 1
+        indexSpaceGeometry.sizes = 4, 0, 0, 0, 0
+        inputTensorAccessPattern[0].allRequired = 0
+        inputTensorAccessPattern[0].tensorDim[0].indexSpaceDim = 0
+        inputTensorAccessPattern[0].tensorDim[0].start_a = 64
+        inputTensorAccessPattern[0].tensorDim[0].start_b = 0
+        inputTensorAccessPattern[0].tensorDim[0].end_a = 64
+        inputTensorAccessPattern[0].tensorDim[0].end_b = 63
+        inputPadValues[0].i32Value = 0
+        inputTensorAccessPattern[1].allRequired = 0
+        inputTensorAccessPattern[1].tensorDim[0].indexSpaceDim = 0
+        inputTensorAccessPattern[1].tensorDim[0].start_a = 64
+        inputTensorAccessPattern[1].tensorDim[0].start_b = 0
+        inputTensorAccessPattern[1].tensorDim[0].end_a = 64
+        inputTensorAccessPattern[1].tensorDim[0].end_b = 63
+        inputPadValues[1].i32Value = 0
+        outputTensorAccessPattern[0].allRequired = 0
+        outputTensorAccessPattern[0].tensorDim[0].indexSpaceDim = 0
+        outputTensorAccessPattern[0].tensorDim[0].start_a = 64
+        outputTensorAccessPattern[0].tensorDim[0].start_b = 0
+        outputTensorAccessPattern[0].tensorDim[0].end_a = 64
+        outputTensorAccessPattern[0].tensorDim[0].end_b = 63
+        auxiliaryTensorCount = 0
+        kernel.kernelBinary = 0
+        kernel.binarySize = 0
+        kernel.paramsNr = 1
+        kernel.scalarParams[0] = 1065353216
+        flags.Value = 0
+Habana Labs TPC simulator Library - version 1.9.0.d385bfb
+Program executed in 3474 cycles using simulation
+
+Base tensor - <256xf32>
+active tensor - <256xf32>
+Actual output tensor from kernel - <256xf32>
+Reference output tensor - <256xf32>
+
+Normal Blend F32 test pass!!
+All 1 tests pass!
+```
