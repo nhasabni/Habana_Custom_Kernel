@@ -33,6 +33,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "cast_f16_to_i16_gaudi2.hpp"
 #include "searchsorted_f32.hpp"
 #include "normal_blend_f32_gaudi2.hpp"
+#include "darken_blend_f32_gaudi2.hpp"
 
 #include "entry_points.hpp"
 
@@ -119,6 +120,8 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            castf16toi16g2Instance.GetKernelName(names[GAUDI2_KERNEL_CAST_F16_TO_I16]);
            NormalBlendF32Gaudi2 normalblendf32g2Instance;
            normalblendf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_NORMAL_BLEND_F32]);
+           DarkenBlendF32Gaudi2 darkenblendf32g2Instance;
+           darkenblendf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_DARKEN_BLEND_F32]);
         }
 
         if (kernelCount != nullptr)
@@ -354,6 +357,13 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
     if (strcmp(params->nodeName, kernelName) == 0)
     {
         return normalblendf32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    DarkenBlendF32Gaudi2 darkenblendf32g2Instance;
+    darkenblendf32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return darkenblendf32g2Instance.GetGcDefinitions(params, instance);
     }
 
     return gcapi::GLUE_NODE_NOT_FOUND;
