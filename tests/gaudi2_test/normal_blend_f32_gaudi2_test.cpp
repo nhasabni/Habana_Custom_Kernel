@@ -28,8 +28,8 @@ void NormalBlendF32Gaudi2Test::normalblendf32_reference_implementation(
 
 int NormalBlendF32Gaudi2Test::runTest()
 {
-    // a vector of 256 elements.
-    const int width  = 256;
+    // a vector of 8k elements.
+    const int width  = 8192;
     unsigned int tensor_shape[] = {width};
 
     float_1DTensor base(tensor_shape);
@@ -91,10 +91,10 @@ int NormalBlendF32Gaudi2Test::runTest()
     // execute a simulation of the kernel using TPC simulator,
     TestBase::RunSimulation(vec, m_in_defs, m_out_defs);
     ReleaseKernelNames(kernelNames, kernelCount);
-    base.Print(0);
-    active.Print(0);
-    out.Print(0);
-    out_ref.Print(0);
+    //base.Print(0);
+    //active.Print(0);
+    //out.Print(0);
+    //out_ref.Print(0);
     for (int element = 0 ; element <  out_ref.ElementCount() ; element++)
     {
         if (abs(out.Data()[element] - out_ref.Data()[element]) > 1e-6)

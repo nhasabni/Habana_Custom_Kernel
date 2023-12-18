@@ -42,7 +42,7 @@ int DarkenBlendF32Gaudi2Test::runTest()
     // If I change the shape to 3x128, then test delivers poor result - no
     // vector operation.
     const int dim0  = 128;
-    const int dim1  = 8;
+    const int dim1  = 64;
     unsigned int tensor_shape[] = {dim0, dim1};
 
     float_2DTensor base(tensor_shape);
@@ -99,9 +99,9 @@ int DarkenBlendF32Gaudi2Test::runTest()
     // execute a simulation of the kernel using TPC simulator,
     TestBase::RunSimulation(vec, m_in_defs, m_out_defs);
     ReleaseKernelNames(kernelNames, kernelCount);
-    base.Print(0);
-    active.Print(0);
-    out.Print(0);
+    //base.Print(0);
+    //active.Print(0);
+    //out.Print(0);
     // out_ref.Print(0);
     for (int element = 0 ; element <  out_ref.ElementCount() ; element++)
     {

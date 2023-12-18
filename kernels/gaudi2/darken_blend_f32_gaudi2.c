@@ -24,6 +24,7 @@ void main(tensor base, tensor active, tensor out) {
  unsigned vec_len = 64;
 
  for(int i = index_space_start[0]; i < index_space_end[0]; i++) {
+    #pragma loop_unroll(4)
     for (int j = index_space_start[1]; j < index_space_end[1]; j++) {
       // index space mapping
       // coordinate 0 is for dim0.

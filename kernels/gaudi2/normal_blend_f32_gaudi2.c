@@ -17,6 +17,7 @@ void main(tensor base, tensor active, tensor out, float opacity) {
  // Our index space operates on the basis of vec_len of 64.
  unsigned vec_len = 64;
 
+ #pragma loop_unroll(8)
  for(int i = index_space_start[0]; i < index_space_end[0]; i++) {
     // index space mapping
     inputCoord[0] = outputCoord[0] = (i * vec_len);
