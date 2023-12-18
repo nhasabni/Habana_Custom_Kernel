@@ -19,6 +19,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "cast_gaudi.hpp"
 #include "filter_fwd_2d_bf16.hpp"
 #include "softmax_bf16.hpp"
+#include "softmax_bf16_gaudi2.hpp"
 #include "leakyrelu_f32_gaudi.hpp"
 #include "sparse_lengths_sum_bf16.hpp"
 #include "customdiv_fwd_f32.hpp"
@@ -32,6 +33,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "avg_pool_2d_f32_gaudi2.hpp"
 #include "cast_f16_to_i16_gaudi2.hpp"
 #include "searchsorted_f32.hpp"
+#include "kl_div_all.hpp"
 #include "normal_blend_f32_gaudi2.hpp"
 #include "darken_blend_f32_gaudi2.hpp"
 
@@ -99,7 +101,10 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            gatherfwddim0i32Instance.GetKernelName(names[GAUDI_KERNEL_GATHER_FWD_DIM0_I32]);
            GatherFwdI32 gatherfwddim1i32Instance(GatherFwdI32::gather_fwd_dim1);
            gatherfwddim1i32Instance.GetKernelName(names[GAUDI_KERNEL_GATHER_FWD_DIM1_I32]);
-
+           KLDivAll KLDivFwdF32Instance(KLDivAll::fwd_f32);
+           KLDivFwdF32Instance.GetKernelName(names[GAUDI_KERNEL_KL_DIV_FWD_F32]);
+           KLDivAll KLDivBwdF32Instance(KLDivAll::bwd_f32);
+           KLDivBwdF32Instance.GetKernelName(names[GAUDI_KERNEL_KL_DIV_BWD_F32]);
         }
 
         if (kernelCount != nullptr)
@@ -112,12 +117,17 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
     {
         if (names != nullptr )
         {
+           KLDivAll KLDivFwdF32Instance2(KLDivAll::fwd_f32_gaudi2); 
+           KLDivFwdF32Instance2.GetKernelName(names[GAUDI2_KERNEL_KL_DIV_FWD_F32]);            
            AvgPool2dF32Gaudi2 avgpool2dfwdf32g2Instance(AvgPool2dF32Gaudi2::fwd);
            avgpool2dfwdf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_AVG_POOL_2D_FWD_F32]);
            AvgPool2dF32Gaudi2 avgpool2dbwdf32g2Instance(AvgPool2dF32Gaudi2::bwd);
            avgpool2dbwdf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_AVG_POOL_2D_BWD_F32]);
            Castf16toi16Gaudi2 castf16toi16g2Instance;
            castf16toi16g2Instance.GetKernelName(names[GAUDI2_KERNEL_CAST_F16_TO_I16]);
+           SoftMaxBF16Gaudi2 softmaxInstance;
+           softmaxInstance.GetKernelNameFcd(names[GAUDI2_KERNEL_SOFTMAX_FCD_BF16]);
+           softmaxInstance.GetKernelNameNonFcd(names[GAUDI2_KERNEL_SOFTMAX_NONFCD_BF16]);
            NormalBlendF32Gaudi2 normalblendf32g2Instance;
            normalblendf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_NORMAL_BLEND_F32]);
            DarkenBlendF32Gaudi2 darkenblendf32g2Instance;
@@ -329,8 +339,27 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
         return gatherfwddim1i32Instance.GetGcDefinitions(params, instance);
     }
 
+    KLDivAll KLDivFwdF32Instance(KLDivAll::fwd_f32);
+    KLDivFwdF32Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return KLDivFwdF32Instance.GetGcDefinitions(params,instance);
+    }
+
+    KLDivAll KLDivBwdF32Instance(KLDivAll::bwd_f32);
+    KLDivBwdF32Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return KLDivBwdF32Instance.GetGcDefinitions(params,instance);
+    }
     /////// --- Gaudi2 
     ///////////////////////////////
+    KLDivAll KLDivFwdF32Instance2(KLDivAll::fwd_f32_gaudi2);
+    KLDivFwdF32Instance2.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return KLDivFwdF32Instance2.GetGcDefinitions(params,instance);
+    }    
     AvgPool2dF32Gaudi2 avgpool2dfwdf32g2Instance(AvgPool2dF32Gaudi2::fwd);
     avgpool2dfwdf32g2Instance.GetKernelName(kernelName);
     if (strcmp(params->nodeName, kernelName) == 0)
@@ -350,6 +379,17 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
     if (strcmp(params->nodeName, kernelName) == 0)
     {
         return castf16toi16g2Instance.GetGcDefinitions(params, instance);
+    }
+    SoftMaxBF16Gaudi2 softmaxBf16g2Instance;
+    softmaxBf16g2Instance.GetKernelNameFcd(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return softmaxBf16g2Instance.GetGcDefinitions(params,instance);
+    }
+    softmaxBf16g2Instance.GetKernelNameNonFcd(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return softmaxBf16g2Instance.GetGcDefinitions(params,instance);
     }
 
     NormalBlendF32Gaudi2 normalblendf32g2Instance;
