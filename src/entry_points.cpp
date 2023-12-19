@@ -35,7 +35,11 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "searchsorted_f32.hpp"
 #include "kl_div_all.hpp"
 #include "normal_blend_f32_gaudi2.hpp"
-#include "darken_blend_f32_gaudi2.hpp"
+#include "normal_blend_u8_gaudi2.hpp"
+#include "darken_blend_u8_gaudi2.hpp"
+#include "lighten_blend_u8_gaudi2.hpp"
+#include "linear_burn_u8_gaudi2.hpp"
+#include "linear_dodge_u8_gaudi2.hpp"
 
 #include "entry_points.hpp"
 
@@ -130,8 +134,16 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            softmaxInstance.GetKernelNameNonFcd(names[GAUDI2_KERNEL_SOFTMAX_NONFCD_BF16]);
            NormalBlendF32Gaudi2 normalblendf32g2Instance;
            normalblendf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_NORMAL_BLEND_F32]);
-           DarkenBlendF32Gaudi2 darkenblendf32g2Instance;
-           darkenblendf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_DARKEN_BLEND_F32]);
+           NormalBlendU8Gaudi2 normalblendu8g2Instance;
+           normalblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_NORMAL_BLEND_U8]);
+           DarkenBlendU8Gaudi2 darkenblendu8g2Instance;
+           darkenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_DARKEN_BLEND_U8]);
+           LightenBlendU8Gaudi2 lightenblendu8g2Instance;
+           lightenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LIGHTEN_BLEND_U8]);
+           LinearBurnU8Gaudi2 linearburnu8g2Instance;
+           linearburnu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LINEAR_BURN_U8]);
+           LinearDodgeU8Gaudi2 lineardodgeu8g2Instance;
+           lineardodgeu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LINEAR_DODGE_U8]);
         }
 
         if (kernelCount != nullptr)
@@ -399,11 +411,39 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
         return normalblendf32g2Instance.GetGcDefinitions(params, instance);
     }
 
-    DarkenBlendF32Gaudi2 darkenblendf32g2Instance;
-    darkenblendf32g2Instance.GetKernelName(kernelName);
+    NormalBlendU8Gaudi2 normalblendu8g2Instance;
+    normalblendu8g2Instance.GetKernelName(kernelName);
     if (strcmp(params->nodeName, kernelName) == 0)
     {
-        return darkenblendf32g2Instance.GetGcDefinitions(params, instance);
+        return normalblendu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    DarkenBlendU8Gaudi2 darkenblendu8g2Instance;
+    darkenblendu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return darkenblendu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LightenBlendU8Gaudi2 lightenblendu8g2Instance;
+    lightenblendu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return lightenblendu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LinearBurnU8Gaudi2 linearburnu8g2Instance;
+    linearburnu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return linearburnu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LinearDodgeU8Gaudi2 lineardodgeu8g2Instance;
+    lineardodgeu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return lineardodgeu8g2Instance.GetGcDefinitions(params, instance);
     }
 
     return gcapi::GLUE_NODE_NOT_FOUND;

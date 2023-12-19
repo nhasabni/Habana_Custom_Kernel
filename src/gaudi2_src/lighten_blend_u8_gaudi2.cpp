@@ -1,20 +1,20 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
-#include "darken_blend_f32_gaudi2.hpp"
+#include "lighten_blend_u8_gaudi2.hpp"
 
-extern unsigned char _binary___darken_blend_f32_gaudi2_o_start;
-extern unsigned char _binary___darken_blend_f32_gaudi2_o_end;
+extern unsigned char _binary___lighten_blend_u8_gaudi2_o_start;
+extern unsigned char _binary___lighten_blend_u8_gaudi2_o_end;
 
- gcapi::GlueCodeReturn_t DarkenBlendF32Gaudi2::GetKernelName(
+ gcapi::GlueCodeReturn_t LightenBlendU8Gaudi2::GetKernelName(
              char kernelName [gcapi::MAX_NODE_NAME])
  {
-     strcpy(kernelName,"custom_darken_blend_f32_gaudi2");
+     strcpy(kernelName,"custom_lighten_blend_u8_gaudi2");
      return gcapi::GLUE_SUCCESS;
  }
 
 
-gcapi::GlueCodeReturn_t DarkenBlendF32Gaudi2::GetGcDefinitions(
+gcapi::GlueCodeReturn_t LightenBlendU8Gaudi2::GetGcDefinitions(
             gcapi::HabanaKernelParams_t* in_defs,
             gcapi::HabanaKernelInstantiation_t* out_defs)
 {
@@ -43,20 +43,20 @@ gcapi::GlueCodeReturn_t DarkenBlendF32Gaudi2::GetGcDefinitions(
         return gcapi::GLUE_INCOMPATIBLE_INPUT_SIZE;
     }
     // validate input and output data type
-    if (in_defs->inputTensors[0].dataType != gcapi::DATA_F32 ||
-        in_defs->inputTensors[1].dataType != gcapi::DATA_F32 ||
-        in_defs->outputTensors[0].dataType != gcapi::DATA_F32)
+    if (in_defs->inputTensors[0].dataType != gcapi::DATA_U8 ||
+        in_defs->inputTensors[1].dataType != gcapi::DATA_U8 ||
+        in_defs->outputTensors[0].dataType != gcapi::DATA_U8)
     {
-        in_defs->inputTensors[0].dataType = gcapi::DATA_F32;
-        in_defs->inputTensors[1].dataType = gcapi::DATA_F32;
-        in_defs->outputTensors[0].dataType = gcapi::DATA_F32;
+        in_defs->inputTensors[0].dataType = gcapi::DATA_U8;
+        in_defs->inputTensors[1].dataType = gcapi::DATA_U8;
+        in_defs->outputTensors[0].dataType = gcapi::DATA_U8;
         return gcapi::GLUE_INCOMPATIBLE_DATA_TYPE;
     }
 
     /*************************************************************************************
     *    Stage II -  Define index space geometry. Output size is same as input size.
     **************************************************************************************/
-    // We operate on 2D index space for DarkenBlend because input tensors and output tensors
+    // We operate on 2D index space for LightenBlend because input tensors and output tensors
     // are 2D.
     unsigned int outputSizes[2] = {0, 0};
     memcpy(outputSizes, in_defs->inputTensors[0].geometry.sizes, sizeof(outputSizes));
@@ -64,7 +64,7 @@ gcapi::GlueCodeReturn_t DarkenBlendF32Gaudi2::GetGcDefinitions(
     // We operate on a block of 64 elements at a time in dim0 only.
     // NOTE however that this may not be optimal blocking in case size of dim0 is less
     // than 64. In that case, we should consider blocking in dim1.
-    int elementsInVec = 64;
+    int elementsInVec = 256;
     out_defs->indexSpaceGeometry.dims = 2;
 
     // round up to elementsInVec and divide by elementsInVec.
@@ -124,8 +124,8 @@ gcapi::GlueCodeReturn_t DarkenBlendF32Gaudi2::GetGcDefinitions(
 	/*************************************************************************************
     *    Stage V -  Load ISA into the descriptor.
     **************************************************************************************/
-    unsigned IsaSize = (&_binary___darken_blend_f32_gaudi2_o_end - 
-                        &_binary___darken_blend_f32_gaudi2_o_start);
+    unsigned IsaSize = (&_binary___lighten_blend_u8_gaudi2_o_end - 
+                        &_binary___lighten_blend_u8_gaudi2_o_start);
     unsigned givenBinarySize = out_defs->elfSize;
     out_defs->elfSize = IsaSize;
 
@@ -133,7 +133,7 @@ gcapi::GlueCodeReturn_t DarkenBlendF32Gaudi2::GetGcDefinitions(
     {
         // copy binary out
         memcpy (out_defs->kernelElf,
-                &_binary___darken_blend_f32_gaudi2_o_start,
+                &_binary___lighten_blend_u8_gaudi2_o_start,
                 IsaSize);
     }
     else

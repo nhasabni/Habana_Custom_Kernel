@@ -19,9 +19,9 @@ void main(tensor base, tensor active, tensor out) {
  int5 inputCoord = { 0 };
  int5 outputCoord = { 0 };
 
- // We operate on a block of 64 elements at a time.
- // Our index space operates on the basis of vec_len of 64.
- unsigned vec_len = 64;
+ // We operate on a block of 256 char elements at a time.
+ // Our index space operates on the basis of vec_len of 256.
+ unsigned vec_len = 256;
 
  for(int i = index_space_start[0]; i < index_space_end[0]; i++) {
     #pragma loop_unroll(4)
@@ -32,8 +32,8 @@ void main(tensor base, tensor active, tensor out) {
       // coordinate 1 is for dim1.
       inputCoord[1] = outputCoord[1] = j;
 
-      float64 b = v_f32_ld_tnsr_b(inputCoord, base);
-      float64 a = v_f32_ld_tnsr_b(inputCoord, active);
+      uchar256 b = v_u8_ld_tnsr_b(inputCoord, base);
+      uchar256 a = v_u8_ld_tnsr_b(inputCoord, active);
 
       // We operate on a block of 64 elements at a time.
       // https://docs.habana.ai/en/latest/TPC/TPC_Intrinsics_Guide/Select.html#
@@ -50,10 +50,10 @@ void main(tensor base, tensor active, tensor out) {
       //
       // return - One of the sources - c or d with respect to the comparison 
       // of the two other sources - a and b.
-      float64 income = 0;
+      uchar256 income = 0;
       bool predicate = 1;
-      float64 result = v_f32_sel_leq_f32_b(b, a, b, a, 0 /*switches*/, income, predicate);
-      v_f32_st_tnsr(outputCoord, out, result);
+      uchar256 result = v_u8_sel_leq_u8_b(b, a, b, a, 0 /*switches*/, income, predicate);
+      v_u8_st_tnsr(outputCoord, out, result);
     }
   }
 }

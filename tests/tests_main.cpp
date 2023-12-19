@@ -35,7 +35,11 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "gather_fwd_i32_test.hpp"
 #include "kl_div_all_test.hpp"
 #include "normal_blend_f32_gaudi2_test.hpp"
-#include "darken_blend_f32_gaudi2_test.hpp"
+#include "normal_blend_u8_gaudi2_test.hpp"
+#include "darken_blend_u8_gaudi2_test.hpp"
+#include "lighten_blend_u8_gaudi2_test.hpp"
+#include "linear_burn_u8_gaudi2_test.hpp"
+#include "linear_dodge_u8_gaudi2_test.hpp"
 
 int main(int argc, char** argv)
 {
@@ -84,7 +88,11 @@ int main(int argc, char** argv)
 
             "SoftMaxBF16Gaudi2Test      Run SoftMaxBF16Gaudi2Test only   " << std::endl <<
             "NormalBlendF32Gaudi2Test   Run NormalBlendF32Gaudi2Test only " << std::endl <<
-            "DarkenBlendF32Gaudi2Test   Run DarkenBlendF32Gaudi2Test only " << std::endl;
+            "NormalBlendU8Gaudi2Test    Run NormalBlendU8Gaudi2Test only " << std::endl <<
+            "DarkenBlendU8Gaudi2Test    Run DarkenBlendU8Gaudi2Test only " << std::endl <<
+            "LightenBlendU8Gaudi2Test   Run LightenBlendU8Gaudi2Test only " << std::endl <<
+            "LinearBurnU8Gaudi2Test     Run LinearBurnU8Gaudi2Test only " << std::endl <<
+            "LinearDodgeU8Gaudi2Test    Run LinearDodgeU8Gaudi2Test only " << std::endl;
             
         exit(0);
     }
@@ -575,16 +583,84 @@ int main(int argc, char** argv)
         }
     }
 
-    DarkenBlendF32Gaudi2Test darkenblendf32Gaudi2ins;
+    NormalBlendU8Gaudi2Test normalblendu8Gaudi2ins;
     if(argc == 1 ||
         (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
         && (strcmp(argv[2],"Gaudi2") ==0)))  ||
         (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
-        && (strcmp(argv[2],"DarkenBlendF32Gaudi2Test") ==0))))
+        && (strcmp(argv[2],"NormalBlendU8Gaudi2Test") ==0))))
     {
-        darkenblendf32Gaudi2ins.SetUp();
-        result = darkenblendf32Gaudi2ins.runTest();
-        darkenblendf32Gaudi2ins.TearDown();
+        normalblendu8Gaudi2ins.SetUp();
+        result = normalblendu8Gaudi2ins.runTest();
+        normalblendu8Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    DarkenBlendU8Gaudi2Test darkenblendu8Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"DarkenBlendU8Gaudi2Test") ==0))))
+    {
+        darkenblendu8Gaudi2ins.SetUp();
+        result = darkenblendu8Gaudi2ins.runTest();
+        darkenblendu8Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LightenBlendU8Gaudi2Test lightenblendu8Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LightenBlendU8Gaudi2Test") ==0))))
+    {
+        lightenblendu8Gaudi2ins.SetUp();
+        result = lightenblendu8Gaudi2ins.runTest();
+        lightenblendu8Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LinearBurnU8Gaudi2Test linearburnu8Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LinearBurnU8Gaudi2Test") ==0))))
+    {
+        linearburnu8Gaudi2ins.SetUp();
+        result = linearburnu8Gaudi2ins.runTest();
+        linearburnu8Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LinearDodgeU8Gaudi2Test lineardodgeu8Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LinearDodgeU8Gaudi2Test") ==0))))
+    {
+        lineardodgeu8Gaudi2ins.SetUp();
+        result = lineardodgeu8Gaudi2ins.runTest();
+        lineardodgeu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
         {

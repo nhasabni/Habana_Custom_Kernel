@@ -414,6 +414,12 @@ template <class T, int DIM>
 inline bool operator!=(const Tensor<T,DIM>& lhs, const Tensor<T,DIM>& rhs){ return !(lhs == rhs); }
 
 template<int NUM>
+gcapi::TensorDataType_t getGcDataType(const Tensor<unsigned char,NUM>& a)
+{
+   return gcapi::DATA_U8;
+}
+
+template<int NUM>
 gcapi::TensorDataType_t getGcDataType(const Tensor<signed char,NUM>& a)
 {
    return gcapi::DATA_I8;
@@ -454,8 +460,10 @@ static const unsigned MAX_TENSOR_DIM = 5;
 
 } // name space test
 
-
-
+typedef test::Tensor<uint8_t,1>  uint8_1DTensor;
+typedef test::Tensor<uint8_t,2>  uint8_2DTensor;
+typedef test::Tensor<uint8_t,3>  uint8_3DTensor;
+typedef test::Tensor<uint8_t,4>  uint8_4DTensor;
 typedef test::Tensor<int8_t,1>  int8_1DTensor;
 typedef test::Tensor<int8_t,2>  int8_2DTensor;
 typedef test::Tensor<int8_t,3>  int8_3DTensor;

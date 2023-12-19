@@ -1,56 +1,58 @@
-#include "normal_blend_f32_gaudi2_test.hpp"
+#include "linear_dodge_u8_gaudi2_test.hpp"
 #include "entry_points.hpp"
 
-//
-// void normalBlendf (Buffer<float,1> base, Buffer<float,1> active, Buffer<float,1> out, float opacity)
+// void linearDodge8 (Buffer<uint8_t,2> base, Buffer<uint8_t,2> active, Buffer<uint8_t,2> out)
 // {
-// 	for (int pixel=0; pixel<out.width(); pixel++) {
-// 		out(pixel) = opacity * active(pixel) + (1.0f - opacity) * base(pixel);
+// 	for (int row=0; row<out.height(); row++) {
+// 		for (int col=0; col<out.width(); col++) {
+// 			out(col,row) = base(col,row) + active(col,row);
+// 		}
 // 	}
 // }
 
-void NormalBlendF32Gaudi2Test::normalblend_f32_reference_implementation(
-        const float_1DTensor& base,
-        const float_1DTensor& active,
-        float_1DTensor& out,
-        NormalBlendF32Gaudi2::NormalBlendParam& param_def)
+void LinearDodgeU8Gaudi2Test::lineardodge_u8_reference_implementation(
+        const uint8_2DTensor& base,
+        const uint8_2DTensor& active,
+        uint8_2DTensor& out)
 {
-   int coords[5] = {0};
-   float opacity = param_def.opacity;
+    int coords[5] = {0};
 
-   for (unsigned pixel = 0; pixel < base.Size(0); pixel++) {
-      coords[0] = pixel;
-      float y = opacity * active.ElementAt(coords) +
-                  (1.0f - opacity) * base.ElementAt(coords);
-      out.SetElement(coords, y);
-   }
+    int maxRows = out.Size(0);
+    int maxCols = out.Size(1);
+
+    for (int row = 0; row < maxRows; row++) {
+        for (int col = 0; col < maxCols; col++) {
+            coords[0] = row; coords[1] = col;
+            out.SetElement(coords, base.ElementAt(coords) + active.ElementAt(coords));
+        }
+    }
 }
 
-int NormalBlendF32Gaudi2Test::runTest()
+int LinearDodgeU8Gaudi2Test::runTest()
 {
-    // a vector of 8k elements.
-    const int width  = 8192;
-    unsigned int tensor_shape[] = {width};
+    // 2D matrix of size 128x3
+    // If the first dimension is multiple of 64, the test delivers optimal result
+    // (most likely because 64-elements needs to be contiguous to read as a vec)
+    // If I change the shape to 3x128, then test delivers poor result - no
+    // vector operation.
+    const int dim0  = 128;
+    const int dim1  = 64;
+    unsigned int tensor_shape[] = {dim0, dim1};
 
-    float_1DTensor base(tensor_shape);
-    base.InitRand(-10.0f, 10.0f);
+    uint8_2DTensor base(tensor_shape);
+    base.InitRand(0, 255);
 
-    float_1DTensor active(tensor_shape);
-    active.InitRand(-10.0f, 10.0f);
+    uint8_2DTensor active(tensor_shape);
+    active.InitRand(0, 255);
 
-    float_1DTensor out(tensor_shape);
-    float_1DTensor out_ref(tensor_shape);
-
-    // Params
-    NormalBlendF32Gaudi2::NormalBlendParam param_def;
-    param_def.opacity = 1;
+    uint8_2DTensor out(tensor_shape);
+    uint8_2DTensor out_ref(tensor_shape);
 
     // execute reference implementation of the kernel.
-    normalblend_f32_reference_implementation(base, active, out_ref, param_def);
+    lineardodge_u8_reference_implementation(base, active, out_ref);
 
     // generate input for query call
     m_in_defs.deviceId = gcapi::DEVICE_ID_GAUDI2;
-    m_in_defs.NodeParams = &param_def;
     m_in_defs.inputTensorNr = 2;
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[0]), base);
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[1]), active);
@@ -74,7 +76,7 @@ int NormalBlendF32Gaudi2Test::runTest()
         return -1;
     }
 
-    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_NORMAL_BLEND_F32]);
+    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_LINEAR_DODGE_U8]);
     result  = HabanaKernel(&m_in_defs, &m_out_defs);
     if (result != gcapi::GLUE_SUCCESS)
     {
@@ -97,13 +99,13 @@ int NormalBlendF32Gaudi2Test::runTest()
     //out_ref.Print(0);
     for (int element = 0 ; element <  out_ref.ElementCount() ; element++)
     {
-        if (abs(out.Data()[element] - out_ref.Data()[element]) > 1e-6)
+        if (out.Data()[element] != out_ref.Data()[element])
         {
-            std::cout << "Normal Blend F32 test failed!!" << std::endl;
+            std::cout << "Linear Dodge U8 test failed!!" << std::endl;
             return -1;
         }
     }
-    std::cout << "Normal Blend F32 test pass!!" << std::endl;
+    std::cout << "Linear Dodge U8 test pass!!" << std::endl;
     return 0;
 }
 

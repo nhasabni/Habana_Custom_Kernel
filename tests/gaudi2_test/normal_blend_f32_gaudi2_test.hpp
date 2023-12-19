@@ -12,7 +12,7 @@ public:
     ~NormalBlendF32Gaudi2Test() {}
     int runTest();
 
-    inline static void normalblendf32_reference_implementation(
+    inline static void normalblend_f32_reference_implementation(
             const float_1DTensor& base,
             const float_1DTensor& active,
             float_1DTensor& out,
