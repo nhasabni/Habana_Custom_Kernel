@@ -1,5 +1,7 @@
-// void darkenBlend8 (Buffer<uint8_t,2> base, Buffer<uint8_t,2> active, Buffer<uint8_t,2> out)
-// {
+// void darkenBlend8 (
+//   Buffer<uint8_t,2> base,
+//   Buffer<uint8_t,2> active,
+//   Buffer<uint8_t,2> out) {
 // 	for (int row=0; row<out.height(); row++) {
 // 		for (int col=0; col<out.width(); col++) {
 // 			if (base(col,row) > active(col,row))

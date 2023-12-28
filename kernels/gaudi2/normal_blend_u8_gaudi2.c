@@ -12,6 +12,8 @@
 //	}
 // }
 
+#pragma tpc_printf(enable)
+
 void main(tensor base, tensor active, tensor out, unsigned char opacity) {
  int5 index_space_start = get_index_space_offset();
  int5 index_space_end = index_space_start + get_index_space_size();
@@ -36,21 +38,24 @@ void main(tensor base, tensor active, tensor out, unsigned char opacity) {
     uchar256 two_fifty_five_minus_opacity_vec = ((unsigned char) 255) - opacity;
 
     // We operate on a block of 256 elements at a time.
-    // There is np TPCC API to handle overflow.
+    // There is no TPCC API to handle overflow.
     uint256 ui1 = v_u8_mul_b(opacity_vec, a);
-    uchar256 uc1 = convert_uint256_to_uchar256(ui1, 1 /* options */);
     // Shift by 8 bits produces incorrect result.
-    char256 shift_bits = (char) 7;
-    uchar256 uc2 = v_u8_shr_b(uc1, shift_bits); // divide by 256
+    char256 shift_bits = (char) 8;
+    //uchar256 uc1 = v_u16_shr_b(ui1, shift_bits); // divide by 256
+    uint256 ui2 = ui1 >> 8;
+    uchar256 uc2 = convert_uint256_to_uchar256(ui2, 1 /* options */);
     
     // There is no TPCC API to handle overflow.
     uint256 ui3 = v_u8_mul_b(two_fifty_five_minus_opacity_vec, b);
-    uchar256 uc3 = convert_uint256_to_uchar256(ui3, 1 /* options */);
-    uchar256 uc4 = v_u8_shr_b(uc3, shift_bits); // divide by 256
+    //uchar256 uc3 = v_u16_shr_b(ui3, shift_bits); // divide by 256
+    uint256 ui4 = ui3 >> 8;
+    uchar256 uc4 = convert_uint256_to_uchar256(ui4, 1 /* options */);
 
     // We can possibly add first and then divide by 255 to reduce number of divisions.
     // But that can possibly introduce rouding errors.    
     uchar256 c = v_u8_add_b(uc2, uc4);
+
     v_u8_st_tnsr(outputCoord, out, c);
   }
 }

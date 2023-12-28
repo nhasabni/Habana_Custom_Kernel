@@ -1,37 +1,31 @@
 #include "normal_blend_u8_gaudi2_test.hpp"
 #include "entry_points.hpp"
 
-// inline uint8_t Mul8x8Div255 (uint8_t a, uint8_t b)
-// {
-// 	return (a * b) / 255;
+// int softmax_part1(vector<int> input, int max_pos) {
+//     int max_val = input[0];
+//     for (int i = 1; i < max_pos; i++)
+//         if (input[i] > max_val)
+//             max_val = input[i];
+//     return max_val;
 // }
-// void normalBlend8 (Buffer<uint8_t,1> base, Buffer<uint8_t,1> active, Buffer<uint8_t,1> out, uint8_t opacity)
-// {
-// 	for (int pixel=0; pixel<out.width(); pixel++) {
-// 		out(pixel) = Mul8x8Div255(opacity, active(pixel)) + Mul8x8Div255(255 - opacity, base(pixel));
-// 	}
-// }
+// def softmax_part1_ps(input max_pos softmax_part1_rv)
+// softmax_part1_rv == reduce_max(list_take(input, max_pos))
 
-// I am using 128 divisor here because TPCC does not handle overflows correctly.
-// Also, division by 256 is incorrect in TPCC.
-void NormalBlendU8Gaudi2Test::normalblend_u8_reference_implementation(
-        const uint8_1DTensor& base,
-        const uint8_1DTensor& active,
-        uint8_1DTensor& out,
-        NormalBlendU8Gaudi2::NormalBlendParam& param_def)
+void LlamaSoftmaxPart1I32Gaudi2::llamasoftmaxpart1_i32_reference_implementation(
+        const int32_1DTensor& in, int32_1DTensor& out)
 {
    int coords[5] = {0};
-   uint8_t opacity = param_def.opacity;
 
-   for (unsigned pixel = 0; pixel < base.Size(0); pixel++) {
-      coords[0] = pixel;
-      uint8_t y = (opacity * active.ElementAt(coords)) / 128 +
-                  ((255 - opacity) * base.ElementAt(coords)) / 128;
-      out.SetElement(coords, y);
+   int32_t max_val = INT_MIN;
+   for (unsigned i = 0; i < in.Size(0); i++) {
+      coords[0] = i;
+      if (max_val < in.ElementAt(coords))
+        max_val = in.ElementAt(coords);
    }
+   out.SetElement(coords, max_val);
 }
 
-int NormalBlendU8Gaudi2Test::runTest()
+int LlamaSoftmaxPart1I32Gaudi2::runTest()
 {
     // a vector of 8k elements.
     const int width  = 256;
@@ -46,12 +40,8 @@ int NormalBlendU8Gaudi2Test::runTest()
     uint16_1DTensor out(tensor_shape);
     uint8_1DTensor out_ref(tensor_shape);
 
-    // Params
-    NormalBlendU8Gaudi2::NormalBlendParam param_def;
-    param_def.opacity = (unsigned char) 1;
-
     // execute reference implementation of the kernel.
-    normalblend_u8_reference_implementation(base, active, out_ref, param_def);
+    llamasoftmaxpart1_i32_reference_implementation(in, out_ref);
 
     // generate input for query call
     m_in_defs.deviceId = gcapi::DEVICE_ID_GAUDI2;

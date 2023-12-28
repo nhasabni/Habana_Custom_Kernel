@@ -432,6 +432,12 @@ gcapi::TensorDataType_t getGcDataType(const Tensor<signed int,NUM>& a)
 }
 
 template<int NUM>
+gcapi::TensorDataType_t getGcDataType(const Tensor<unsigned short,NUM>& a)
+{
+   return gcapi::DATA_U16;
+}
+
+template<int NUM>
 gcapi::TensorDataType_t getGcDataType(const Tensor<signed short,NUM>& a)
 {
    return gcapi::DATA_I16;
@@ -459,6 +465,8 @@ static const unsigned MAX_TENSOR_DIM = 5;
 
 
 } // name space test
+
+typedef test::Tensor<uint16_t,1> uint16_1DTensor;
 
 typedef test::Tensor<uint8_t,1>  uint8_1DTensor;
 typedef test::Tensor<uint8_t,2>  uint8_2DTensor;
