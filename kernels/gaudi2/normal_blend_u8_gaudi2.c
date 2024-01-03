@@ -14,39 +14,6 @@
 
 #pragma tpc_printf(enable)
 
-float64 reciprocal_cephes_fast_f32(float64 input)
-{
-    float64 result, temp0, temp1, temp2;
-    const float a = 2.58586f;
-    const float b = -5.81818f;
-    const float c = 4.24242f;
-
-    int64 significand = 0;
-    significand = v_i32_and_b(*((int64*)&input), 0x007fffff);
-    significand = v_i32_or_b(significand, 0x3f000000);
-    result = *((float64*)&significand);
-
-    int64 exponent = 0;
-    exponent =  v_i32_shr_b(*((int64*)&input), 23);
-    exponent = v_i32_and_b(exponent, 0x000000ff);
-    exponent -= 0x7e;
-
-    temp0 = v_f32_mac_b(result, a, b);
-    temp1 = v_f32_mac_b(result, temp0, c);
-    temp2 = v_f32_mac_b(-result, temp1, 2);
-    temp2 *= temp1;
-    temp0 = v_f32_mac_b(-result, temp2, 2);
-    temp0 *= temp2;
-
-    int64 exp =  v_i32_shr_b(*((int64*)&temp0), 23);
-    exp = v_i32_and_b(exp, 0x000000ff);
-    exp = v_i32_add_b(exp, -exponent);
-    exp = v_i32_and_b(exp, 0xff);
-    result = v_f32_form_fp_num_ie_b((char256)exp, input, temp0, SW_EXP_IS_NUM);
-
-    return result;
-}
-
 uchar256 Mul8x8Div255(uchar256 a, uchar256 b) {
   // Implements (a * b) / 255
 
@@ -58,7 +25,7 @@ uchar256 Mul8x8Div255(uchar256 a, uchar256 b) {
 
   // perform division by multiplying with the reciprocal of the divisor.
   float64 divisor = 255;
-  float64 reciprocal_255 = reciprocal_cephes_fast_f32(divisor);
+  float64 reciprocal_255 = v_reciprocal_fast_f32(divisor);
 
   float256 f2;
   f2.v1 = v_f32_mul_b(f1.v1, reciprocal_255);
