@@ -40,6 +40,8 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "multiply_blend_u8_gaudi2.hpp"
 #include "lighten_blend_u8_gaudi2.hpp"
 #include "color_burn_u8_gaudi2.hpp"
+#include "color_dodge_u8_gaudi2.hpp"
+#include "overlay_blend_u8_gaudi2.hpp"
 #include "screen_blend_u8_gaudi2.hpp"
 #include "linear_burn_u8_gaudi2.hpp"
 #include "linear_dodge_u8_gaudi2.hpp"
@@ -147,12 +149,16 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            lightenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LIGHTEN_BLEND_U8]);
            ColorBurnU8Gaudi2 colorburnu8g2Instance;
            colorburnu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_COLOR_BURN_U8]);
+           ColorDodgeU8Gaudi2 colordodgeu8g2Instance;
+           colordodgeu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_COLOR_DODGE_U8]);
            ScreenBlendU8Gaudi2 screenblendu8g2Instance;
            screenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_SCREEN_BLEND_U8]);
            LinearBurnU8Gaudi2 linearburnu8g2Instance;
            linearburnu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LINEAR_BURN_U8]);
            LinearDodgeU8Gaudi2 lineardodgeu8g2Instance;
            lineardodgeu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LINEAR_DODGE_U8]);
+           OverlayBlendU8Gaudi2 overlayblendu8g2Instance;
+           overlayblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_OVERLAY_BLEND_U8]);
         }
 
         if (kernelCount != nullptr)
@@ -455,6 +461,13 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
         return colorburnu8g2Instance.GetGcDefinitions(params, instance);
     }
 
+    ColorDodgeU8Gaudi2 colordodgeu8g2Instance;
+    colordodgeu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return colordodgeu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
     ScreenBlendU8Gaudi2 screenblendu8g2Instance;
     screenblendu8g2Instance.GetKernelName(kernelName);
     if (strcmp(params->nodeName, kernelName) == 0)
@@ -474,6 +487,13 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
     if (strcmp(params->nodeName, kernelName) == 0)
     {
         return lineardodgeu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    OverlayBlendU8Gaudi2 overlayblendu8g2Instance;
+    overlayblendu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return overlayblendu8g2Instance.GetGcDefinitions(params, instance);
     }
 
     return gcapi::GLUE_NODE_NOT_FOUND;

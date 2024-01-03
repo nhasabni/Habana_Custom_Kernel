@@ -40,7 +40,9 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "multiply_blend_u8_gaudi2_test.hpp"
 #include "lighten_blend_u8_gaudi2_test.hpp"
 #include "color_burn_u8_gaudi2_test.hpp"
+#include "color_dodge_u8_gaudi2_test.hpp"
 #include "screen_blend_u8_gaudi2_test.hpp"
+#include "overlay_blend_u8_gaudi2_test.hpp"
 #include "linear_burn_u8_gaudi2_test.hpp"
 #include "linear_dodge_u8_gaudi2_test.hpp"
 
@@ -96,7 +98,9 @@ int main(int argc, char** argv)
             "MultiplyBlendU8Gaudi2Test  Run DarkenBlendU8Gaudi2Test only " << std::endl <<
             "LightenBlendU8Gaudi2Test   Run LightenBlendU8Gaudi2Test only " << std::endl <<
             "ColorBurnU8Gaudi2Test      Run ColorBurnU8Gaudi2Test only " << std::endl <<
+            "ColorDodgeU8Gaudi2Test     Run ColorDodgeU8Gaudi2Test only " << std::endl <<
             "ScreenBlendU8Gaudi2Test    Run ScreenBlendU8Gaudi2Test only " << std::endl <<
+            "OverlayBlendU8Gaudi2Test   Run OverlayBlendU8Gaudi2Test only " << std::endl <<
             "LinearBurnU8Gaudi2Test     Run LinearBurnU8Gaudi2Test only " << std::endl <<
             "LinearDodgeU8Gaudi2Test    Run LinearDodgeU8Gaudi2Test only " << std::endl;
             
@@ -674,6 +678,23 @@ int main(int argc, char** argv)
         }
     }
 
+    ColorDodgeU8Gaudi2Test colordodgeu8Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"ColorDodgeU8Gaudi2Test") ==0))))
+    {
+        colordodgeu8Gaudi2ins.SetUp();
+        result = colordodgeu8Gaudi2ins.runTest();
+        colordodgeu8Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
     ScreenBlendU8Gaudi2Test screenblendu8Gaudi2ins;
     if(argc == 1 ||
         (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
@@ -684,6 +705,23 @@ int main(int argc, char** argv)
         screenblendu8Gaudi2ins.SetUp();
         result = screenblendu8Gaudi2ins.runTest();
         screenblendu8Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    OverlayBlendU8Gaudi2Test overlayblendu8Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"OverlayBlendU8Gaudi2Test") ==0))))
+    {
+        overlayblendu8Gaudi2ins.SetUp();
+        result = overlayblendu8Gaudi2ins.runTest();
+        overlayblendu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
         {
