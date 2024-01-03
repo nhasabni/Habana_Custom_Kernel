@@ -1,59 +1,67 @@
-#include "normal_blend_u8_gaudi2_test.hpp"
+#include "color_burn_u8_gaudi2_test.hpp"
 #include "entry_points.hpp"
 
-// inline uint8_t Mul8x8Div255 (uint8_t a, uint8_t b)
+// void colorBurn8 (Buffer<uint8_t,2> base, Buffer<uint8_t,2> active, Buffer<uint8_t,2> out)
 // {
-// 	return (a * b) / 255;
-// }
-// void normalBlend8 (Buffer<uint8_t,1> base, Buffer<uint8_t,1> active, Buffer<uint8_t,1> out, uint8_t opacity)
-// {
-// 	for (int pixel=0; pixel<out.width(); pixel++) {
-// 		out(pixel) = Mul8x8Div255(opacity, active(pixel)) + Mul8x8Div255(255 - opacity, base(pixel));
+// 	for (int row=0; row<out.height(); row++) {
+// 		for (int col=0; col<out.width(); col++) {
+// 			if (active(col, row) == 0)
+// 				out(col,row) = 255;
+// 			else
+// 				out(col,row) = 255 - (255 - base(col,row)) / active(col,row);
+// 		}
 // 	}
 // }
 
-void NormalBlendU8Gaudi2Test::normalblend_u8_reference_implementation(
-        const uint8_1DTensor& base,
-        const uint8_1DTensor& active,
-        uint8_1DTensor& out,
-        NormalBlendU8Gaudi2::NormalBlendParam& param_def)
+void ColorBurnU8Gaudi2Test::colorburn_u8_reference_implementation(
+        const uint8_2DTensor& base,
+        const uint8_2DTensor& active,
+        uint8_2DTensor& out)
 {
-   int coords[5] = {0};
-   uint8_t opacity = param_def.opacity;
+    int coords[5] = {0};
 
-   for (unsigned pixel = 0; pixel < base.Size(0); pixel++) {
-      coords[0] = pixel;
-      uint8_t y = (opacity * active.ElementAt(coords)) / 255 +
-                  ((255 - opacity) * base.ElementAt(coords)) / 255;
-      out.SetElement(coords, y);
-   }
+    int maxRows = out.Size(0);
+    int maxCols = out.Size(1);
+
+    for (int row = 0; row < maxRows; row++) {
+        for (int col = 0; col < maxCols; col++) {
+            coords[0] = row; coords[1] = col;
+            if (active.ElementAt(coords) == 0) {
+                out.SetElement(coords, (uint8_t) 255);
+            } else {
+                uint8_t x = (uint8_t) 255 - (((uint8_t) 255 - base.ElementAt(coords)) /
+                                                                active.ElementAt(coords));
+                out.SetElement(coords, x);
+            }
+        }
+    }
 }
 
-int NormalBlendU8Gaudi2Test::runTest()
+int ColorBurnU8Gaudi2Test::runTest()
 {
-    // a vector of 8k elements.
-    const int width  = 256;
-    unsigned int tensor_shape[] = {width};
+    // 2D matrix of size 128x3
+    // If the first dimension is multiple of 64, the test delivers optimal result
+    // (most likely because 64-elements needs to be contiguous to read as a vec)
+    // If I change the shape to 3x128, then test delivers poor result - no
+    // vector operation.
+    const int dim0  = 128;
+    const int dim1  = 3;
+    unsigned int tensor_shape[] = {dim0, dim1};
 
-    uint8_1DTensor base(tensor_shape);
+    uint8_2DTensor base(tensor_shape);
     base.InitRand(0, 255);
 
-    uint8_1DTensor active(tensor_shape);
+    uint8_2DTensor active(tensor_shape);
     active.InitRand(0, 255);
 
-    uint8_1DTensor out(tensor_shape);
-    uint8_1DTensor out_ref(tensor_shape);
-
-    // Params
-    NormalBlendU8Gaudi2::NormalBlendParam param_def;
-    param_def.opacity = (unsigned char) 21;
+    uint8_2DTensor out(tensor_shape);
+    uint8_2DTensor out_ref(tensor_shape);
 
     // execute reference implementation of the kernel.
-    normalblend_u8_reference_implementation(base, active, out_ref, param_def);
+    colorburn_u8_reference_implementation(base, active, out_ref);
 
     // generate input for query call
     m_in_defs.deviceId = gcapi::DEVICE_ID_GAUDI2;
-    m_in_defs.NodeParams = &param_def;
     m_in_defs.inputTensorNr = 2;
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[0]), base);
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[1]), active);
@@ -77,7 +85,7 @@ int NormalBlendU8Gaudi2Test::runTest()
         return -1;
     }
 
-    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_NORMAL_BLEND_U8]);
+    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_COLOR_BURN_U8]);
     result  = HabanaKernel(&m_in_defs, &m_out_defs);
     if (result != gcapi::GLUE_SUCCESS)
     {
@@ -102,11 +110,11 @@ int NormalBlendU8Gaudi2Test::runTest()
     {
         if (abs(out.Data()[element] - out_ref.Data()[element]) > 1)
         {
-            std::cout << "Normal Blend U8 test failed!!" << std::endl;
+            std::cout << "Color Burn U8 test failed!! (index:" << element << ")" << std::endl;
             return -1;
         }
     }
-    std::cout << "Normal Blend U8 test pass!!" << std::endl;
+    std::cout << "Color Burn U8 test pass!!" << std::endl;
     return 0;
 }
 

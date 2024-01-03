@@ -37,7 +37,10 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "normal_blend_f32_gaudi2.hpp"
 #include "normal_blend_u8_gaudi2.hpp"
 #include "darken_blend_u8_gaudi2.hpp"
+#include "multiply_blend_u8_gaudi2.hpp"
 #include "lighten_blend_u8_gaudi2.hpp"
+#include "color_burn_u8_gaudi2.hpp"
+#include "screen_blend_u8_gaudi2.hpp"
 #include "linear_burn_u8_gaudi2.hpp"
 #include "linear_dodge_u8_gaudi2.hpp"
 
@@ -138,8 +141,14 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            normalblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_NORMAL_BLEND_U8]);
            DarkenBlendU8Gaudi2 darkenblendu8g2Instance;
            darkenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_DARKEN_BLEND_U8]);
+           MultiplyBlendU8Gaudi2 multiplyblendu8g2Instance;
+           multiplyblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_MULTIPLY_BLEND_U8]);
            LightenBlendU8Gaudi2 lightenblendu8g2Instance;
            lightenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LIGHTEN_BLEND_U8]);
+           ColorBurnU8Gaudi2 colorburnu8g2Instance;
+           colorburnu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_COLOR_BURN_U8]);
+           ScreenBlendU8Gaudi2 screenblendu8g2Instance;
+           screenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_SCREEN_BLEND_U8]);
            LinearBurnU8Gaudi2 linearburnu8g2Instance;
            linearburnu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LINEAR_BURN_U8]);
            LinearDodgeU8Gaudi2 lineardodgeu8g2Instance;
@@ -425,11 +434,32 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
         return darkenblendu8g2Instance.GetGcDefinitions(params, instance);
     }
 
+    MultiplyBlendU8Gaudi2 multiplyblendu8g2Instance;
+    multiplyblendu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return multiplyblendu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
     LightenBlendU8Gaudi2 lightenblendu8g2Instance;
     lightenblendu8g2Instance.GetKernelName(kernelName);
     if (strcmp(params->nodeName, kernelName) == 0)
     {
         return lightenblendu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    ColorBurnU8Gaudi2 colorburnu8g2Instance;
+    colorburnu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return colorburnu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    ScreenBlendU8Gaudi2 screenblendu8g2Instance;
+    screenblendu8g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return screenblendu8g2Instance.GetGcDefinitions(params, instance);
     }
 
     LinearBurnU8Gaudi2 linearburnu8g2Instance;

@@ -1,31 +1,39 @@
-#include "normal_blend_u8_gaudi2_test.hpp"
+#include "screen_blend_u8_gaudi2_test.hpp"
 #include "entry_points.hpp"
 
-// int softmax_part1(vector<int> input, int max_pos) {
-//     int max_val = input[0];
-//     for (int i = 1; i < max_pos; i++)
-//         if (input[i] > max_val)
-//             max_val = input[i];
-//     return max_val;
+// inline uint8_t Mul8x8Div255 (uint8_t a, uint8_t b)
+// {
+// 	return (a * b) / 255;
 // }
-// def softmax_part1_ps(input max_pos softmax_part1_rv)
-// softmax_part1_rv == reduce_max(list_take(input, max_pos))
+// inline uint8_t Screen8x8 (uint8_t a, uint8_t b)
+// {
+// 	return a + b - Mul8x8Div255(a, b);
+// }
+// void screenBlend8 (Buffer<uint8_t,2> base, Buffer<uint8_t,2> active, Buffer<uint8_t,2> out)
+// {
+// 	for (int row=0; row<out.height(); row++) {
+// 		for (int col=0; col<out.width(); col++) {
+// 			out(col,row) = Screen8x8(base(col,row), active(col,row));
+// 		}
+// 	}
+// }
 
-void LlamaSoftmaxPart1I32Gaudi2::llamasoftmaxpart1_i32_reference_implementation(
-        const int32_1DTensor& in, int32_1DTensor& out)
+void ScreenBlendU8Gaudi2Test::screenblend_u8_reference_implementation(
+        const uint8_1DTensor& base,
+        const uint8_1DTensor& active,
+        uint8_1DTensor& out)
 {
    int coords[5] = {0};
 
-   int32_t max_val = INT_MIN;
-   for (unsigned i = 0; i < in.Size(0); i++) {
-      coords[0] = i;
-      if (max_val < in.ElementAt(coords))
-        max_val = in.ElementAt(coords);
+   for (unsigned pixel = 0; pixel < base.Size(0); pixel++) {
+      coords[0] = pixel;
+      uint8_t x = (active.ElementAt(coords) * base.ElementAt(coords)) / 255;
+      uint8_t y = active.ElementAt(coords) + base.ElementAt(coords) - x;
+      out.SetElement(coords, y);
    }
-   out.SetElement(coords, max_val);
 }
 
-int LlamaSoftmaxPart1I32Gaudi2::runTest()
+int ScreenBlendU8Gaudi2Test::runTest()
 {
     // a vector of 8k elements.
     const int width  = 256;
@@ -37,15 +45,14 @@ int LlamaSoftmaxPart1I32Gaudi2::runTest()
     uint8_1DTensor active(tensor_shape);
     active.InitRand(0, 255);
 
-    uint16_1DTensor out(tensor_shape);
+    uint8_1DTensor out(tensor_shape);
     uint8_1DTensor out_ref(tensor_shape);
 
     // execute reference implementation of the kernel.
-    llamasoftmaxpart1_i32_reference_implementation(in, out_ref);
+    screenblend_u8_reference_implementation(base, active, out_ref);
 
     // generate input for query call
     m_in_defs.deviceId = gcapi::DEVICE_ID_GAUDI2;
-    m_in_defs.NodeParams = &param_def;
     m_in_defs.inputTensorNr = 2;
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[0]), base);
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[1]), active);
@@ -69,7 +76,7 @@ int LlamaSoftmaxPart1I32Gaudi2::runTest()
         return -1;
     }
 
-    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_NORMAL_BLEND_U8]);
+    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_SCREEN_BLEND_U8]);
     result  = HabanaKernel(&m_in_defs, &m_out_defs);
     if (result != gcapi::GLUE_SUCCESS)
     {
@@ -92,13 +99,13 @@ int LlamaSoftmaxPart1I32Gaudi2::runTest()
     out_ref.Print(0);
     for (int element = 0 ; element <  out_ref.ElementCount() ; element++)
     {
-        if (abs(out.Data()[element] - out_ref.Data()[element]) > 1e-6)
+        if (abs(out.Data()[element] - out_ref.Data()[element]) > 1)
         {
-            std::cout << "Normal Blend U8 test failed!!" << std::endl;
+            std::cout << "Screen Blend U8 test failed!!" << std::endl;
             return -1;
         }
     }
-    std::cout << "Normal Blend U8 test pass!!" << std::endl;
+    std::cout << "Screen Blend U8 test pass!!" << std::endl;
     return 0;
 }
 

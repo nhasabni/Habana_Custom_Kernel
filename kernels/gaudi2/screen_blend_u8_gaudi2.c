@@ -3,13 +3,18 @@
 //	return (a * b) / 255;
 // }
 
-// Normal blend (alpha compositing)
-// + Implemented for 8-bit layers
-// void normalBlend8 (Buffer<uint8_t,1> base, Buffer<uint8_t,1> active, Buffer<uint8_t,1> out, uint8_t opacity)
+// inline uint8_t Screen8x8 (uint8_t a, uint8_t b)
 // {
-//	for (int pixel=0; pixel<out.width(); pixel++) {
-//		out(pixel) = Mul8x8Div255(opacity, active(pixel)) + Mul8x8Div255(255 - opacity, base(pixel));
-//	}
+// 	return a + b - Mul8x8Div255(a, b);
+// }
+
+// void screenBlend8 (Buffer<uint8_t,2> base, Buffer<uint8_t,2> active, Buffer<uint8_t,2> out)
+// {
+// 	for (int row=0; row<out.height(); row++) {
+// 		for (int col=0; col<out.width(); col++) {
+// 			out(col,row) = Screen8x8(base(col,row), active(col,row));
+// 		}
+// 	}
 // }
 
 #pragma tpc_printf(enable)
@@ -61,13 +66,20 @@ uchar256 Mul8x8Div255(uchar256 a, uchar256 b) {
   float64 reciprocal_255 = reciprocal_cephes_fast_f32(divisor);
 
   float256 f2;
-  f2.v1 = v_f32_mul_b(f1.v1, reciprocal_255);
-  f2.v2 = v_f32_mul_b(f1.v2, reciprocal_255);
-  f2.v3 = v_f32_mul_b(f1.v3, reciprocal_255);
-  f2.v4 = v_f32_mul_b(f1.v4, reciprocal_255);
+  f2.v1 = f1.v1 * reciprocal_255; f2.v2 = f1.v2 * reciprocal_255;
+  f2.v3 = f1.v3 * reciprocal_255; f2.v4 = f1.v4 * reciprocal_255;
 
   uchar256 uc2 = convert_float256_to_uchar256(f2, SW_RD);
   return uc2;
+}
+
+uchar256 Screen8x8(uchar256 a, uchar256 b) {
+  // Implements a + b - Mul8x8Div255(a, b)
+
+  uchar256 c = Mul8x8Div255(a, b);
+  uchar256 d = v_u8_sub_b(b, c, SW_SAT);
+  uchar256 e = v_u8_add_b(a, d, SW_SAT);
+  return e;
 }
 
 void main(tensor base, tensor active, tensor out, unsigned char opacity) {
@@ -88,15 +100,8 @@ void main(tensor base, tensor active, tensor out, unsigned char opacity) {
 
     uchar256 b = v_u8_ld_tnsr_b(inputCoord, base);
     uchar256 a = v_u8_ld_tnsr_b(inputCoord, active);
-
-    // scalar to vector broadcasting
-    uchar256 opacity_vec = opacity;
-    uchar256 two_fifty_five_minus_opacity_vec = ((unsigned char) 255) - opacity;
-
-    uchar256 uc2 = Mul8x8Div255(opacity_vec, a);
-    uchar256 uc4 = Mul8x8Div255(two_fifty_five_minus_opacity_vec, b);
-    uchar256 c = v_u8_add_b(uc2, uc4);
-
+    uchar256 c = Screen8x8(b, a);
+    
     v_u8_st_tnsr(outputCoord, out, c);
   }
 }

@@ -1,26 +1,25 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
-#include "normal_blend_u8_gaudi2.hpp"
+#include "screen_blend_u8_gaudi2.hpp"
 
 
-extern unsigned char _binary___normal_blend_u8_gaudi2_o_start;
-extern unsigned char _binary___normal_blend_u8_gaudi2_o_end;
+extern unsigned char _binary___screen_blend_u8_gaudi2_o_start;
+extern unsigned char _binary___screen_blend_u8_gaudi2_o_end;
 
- gcapi::GlueCodeReturn_t NormalBlendU8Gaudi2::GetKernelName(
+ gcapi::GlueCodeReturn_t ScreenBlendU8Gaudi2::GetKernelName(
              char kernelName [gcapi::MAX_NODE_NAME])
  {
-     strcpy(kernelName,"custom_normal_blend_u8_gaudi2");
+     strcpy(kernelName,"custom_screen_blend_u8_gaudi2");
      return gcapi::GLUE_SUCCESS;
  }
 
 
-gcapi::GlueCodeReturn_t NormalBlendU8Gaudi2::GetGcDefinitions(
+gcapi::GlueCodeReturn_t ScreenBlendU8Gaudi2::GetGcDefinitions(
             gcapi::HabanaKernelParams_t* in_defs,
             gcapi::HabanaKernelInstantiation_t* out_defs)
 {
     gcapi::GlueCodeReturn_t retVal;
-    NormalBlendParam* param_def = static_cast<NormalBlendParam*>(in_defs->NodeParams);
 
     /*************************************************************************************
     *   Stage I - validate input
@@ -107,14 +106,12 @@ gcapi::GlueCodeReturn_t NormalBlendU8Gaudi2::GetGcDefinitions(
     /*************************************************************************************
     *    Stage IV -  define scalar parameters
     **************************************************************************************/
-    out_defs->kernel.paramsNr = sizeof(*param_def)/ sizeof(uint8_t);
-    memcpy(&( out_defs->kernel.scalarParams[0]), param_def, sizeof(*param_def));
 	
 	/*************************************************************************************
     *    Stage V -  Load ISA into the descriptor.
     **************************************************************************************/
-    unsigned IsaSize = (&_binary___normal_blend_u8_gaudi2_o_end - 
-                        &_binary___normal_blend_u8_gaudi2_o_start);
+    unsigned IsaSize = (&_binary___screen_blend_u8_gaudi2_o_end - 
+                        &_binary___screen_blend_u8_gaudi2_o_start);
     unsigned givenBinarySize = out_defs->elfSize;
     out_defs->elfSize = IsaSize;
 
@@ -122,7 +119,7 @@ gcapi::GlueCodeReturn_t NormalBlendU8Gaudi2::GetGcDefinitions(
     {
         // copy binary out
         memcpy (out_defs->kernelElf,
-                &_binary___normal_blend_u8_gaudi2_o_start,
+                &_binary___screen_blend_u8_gaudi2_o_start,
                 IsaSize);
     }
     else

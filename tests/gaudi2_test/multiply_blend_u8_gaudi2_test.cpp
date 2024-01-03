@@ -1,35 +1,34 @@
-#include "normal_blend_u8_gaudi2_test.hpp"
+#include "multiply_blend_u8_gaudi2_test.hpp"
 #include "entry_points.hpp"
 
 // inline uint8_t Mul8x8Div255 (uint8_t a, uint8_t b)
 // {
 // 	return (a * b) / 255;
 // }
-// void normalBlend8 (Buffer<uint8_t,1> base, Buffer<uint8_t,1> active, Buffer<uint8_t,1> out, uint8_t opacity)
+// void multiplyBlend8 (Buffer<uint8_t,2> base, Buffer<uint8_t,2> active, Buffer<uint8_t,2> out)
 // {
-// 	for (int pixel=0; pixel<out.width(); pixel++) {
-// 		out(pixel) = Mul8x8Div255(opacity, active(pixel)) + Mul8x8Div255(255 - opacity, base(pixel));
+// 	for (int row=0; row<out.height(); row++) {
+// 		for (int col=0; col<out.width(); col++) {
+// 			out(col,row) = Mul8x8Div255(base(col,row), active(col,row));
+// 		}
 // 	}
 // }
 
-void NormalBlendU8Gaudi2Test::normalblend_u8_reference_implementation(
+void MultiplyBlendU8Gaudi2Test::multiplyblend_u8_reference_implementation(
         const uint8_1DTensor& base,
         const uint8_1DTensor& active,
-        uint8_1DTensor& out,
-        NormalBlendU8Gaudi2::NormalBlendParam& param_def)
+        uint8_1DTensor& out)
 {
    int coords[5] = {0};
-   uint8_t opacity = param_def.opacity;
 
    for (unsigned pixel = 0; pixel < base.Size(0); pixel++) {
       coords[0] = pixel;
-      uint8_t y = (opacity * active.ElementAt(coords)) / 255 +
-                  ((255 - opacity) * base.ElementAt(coords)) / 255;
+      uint8_t y = (active.ElementAt(coords) * base.ElementAt(coords)) / 255;
       out.SetElement(coords, y);
    }
 }
 
-int NormalBlendU8Gaudi2Test::runTest()
+int MultiplyBlendU8Gaudi2Test::runTest()
 {
     // a vector of 8k elements.
     const int width  = 256;
@@ -44,16 +43,11 @@ int NormalBlendU8Gaudi2Test::runTest()
     uint8_1DTensor out(tensor_shape);
     uint8_1DTensor out_ref(tensor_shape);
 
-    // Params
-    NormalBlendU8Gaudi2::NormalBlendParam param_def;
-    param_def.opacity = (unsigned char) 21;
-
     // execute reference implementation of the kernel.
-    normalblend_u8_reference_implementation(base, active, out_ref, param_def);
+    multiplyblend_u8_reference_implementation(base, active, out_ref);
 
     // generate input for query call
     m_in_defs.deviceId = gcapi::DEVICE_ID_GAUDI2;
-    m_in_defs.NodeParams = &param_def;
     m_in_defs.inputTensorNr = 2;
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[0]), base);
     LoadTensorToGcDescriptor(&(m_in_defs.inputTensors[1]), active);
@@ -77,7 +71,7 @@ int NormalBlendU8Gaudi2Test::runTest()
         return -1;
     }
 
-    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_NORMAL_BLEND_U8]);
+    strcpy(m_in_defs.nodeName, kernelNames[GAUDI2_KERNEL_MULTIPLY_BLEND_U8]);
     result  = HabanaKernel(&m_in_defs, &m_out_defs);
     if (result != gcapi::GLUE_SUCCESS)
     {
@@ -102,11 +96,11 @@ int NormalBlendU8Gaudi2Test::runTest()
     {
         if (abs(out.Data()[element] - out_ref.Data()[element]) > 1)
         {
-            std::cout << "Normal Blend U8 test failed!!" << std::endl;
+            std::cout << "Multiply Blend U8 test failed!!" << std::endl;
             return -1;
         }
     }
-    std::cout << "Normal Blend U8 test pass!!" << std::endl;
+    std::cout << "Multiply Blend U8 test pass!!" << std::endl;
     return 0;
 }
 
