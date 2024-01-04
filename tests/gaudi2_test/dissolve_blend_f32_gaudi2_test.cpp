@@ -43,9 +43,7 @@ int DissolveBlendF32Gaudi2Test::runTest()
     // (most likely because 64-elements needs to be contiguous to read as a vec)
     // If I change the shape to 3x128, then test delivers poor result - no
     // vector operation.
-    const int dim0  = 128;
-    const int dim1  = 64;
-    unsigned int tensor_shape[] = {dim0, dim1};
+    unsigned int tensor_shape[] = {128, 3};
 
     float_2DTensor base(tensor_shape);
     base.InitRand(-10.0f, 10.0f);
