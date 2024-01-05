@@ -15,6 +15,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 ********************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "filter_fwd_2d_bf16_test.hpp"
 #include "softmax_bf16_test.hpp"
 #include "softmax_bf16_gaudi2_test.hpp"
@@ -586,7 +587,8 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"NormalBlendF32Gaudi2Test") ==0))))
     {
         normalblendf32Gaudi2ins.SetUp();
-        result = normalblendf32Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = normalblendf32Gaudi2ins.runTest(m);
         normalblendf32Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -603,7 +605,8 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"NormalBlendU8Gaudi2Test") ==0))))
     {
         normalblendu8Gaudi2ins.SetUp();
-        result = normalblendu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = normalblendu8Gaudi2ins.runTest(m);
         normalblendu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -620,7 +623,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"DissolveBlendF32Gaudi2Test") ==0))))
     {
         dissolveblendf32Gaudi2ins.SetUp();
-        result = dissolveblendf32Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = dissolveblendf32Gaudi2ins.runTest(m, n);
         dissolveblendf32Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -637,7 +642,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"DarkenBlendU8Gaudi2Test") ==0))))
     {
         darkenblendu8Gaudi2ins.SetUp();
-        result = darkenblendu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = darkenblendu8Gaudi2ins.runTest(m, n);
         darkenblendu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -654,7 +661,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"MultiplyBlendU8Gaudi2Test") ==0))))
     {
         multiplyblendu8Gaudi2ins.SetUp();
-        result = multiplyblendu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = multiplyblendu8Gaudi2ins.runTest(m, n);
         multiplyblendu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -671,7 +680,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"LightenBlendU8Gaudi2Test") ==0))))
     {
         lightenblendu8Gaudi2ins.SetUp();
-        result = lightenblendu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = lightenblendu8Gaudi2ins.runTest(m, n);
         lightenblendu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -688,7 +699,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"ColorBurnU8Gaudi2Test") ==0))))
     {
         colorburnu8Gaudi2ins.SetUp();
-        result = colorburnu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = colorburnu8Gaudi2ins.runTest(m, n);
         colorburnu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -705,7 +718,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"ColorDodgeU8Gaudi2Test") ==0))))
     {
         colordodgeu8Gaudi2ins.SetUp();
-        result = colordodgeu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = colordodgeu8Gaudi2ins.runTest(m, n);
         colordodgeu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -722,7 +737,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"ScreenBlendU8Gaudi2Test") ==0))))
     {
         screenblendu8Gaudi2ins.SetUp();
-        result = screenblendu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = screenblendu8Gaudi2ins.runTest(m, n);
         screenblendu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -739,7 +756,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"OverlayBlendU8Gaudi2Test") ==0))))
     {
         overlayblendu8Gaudi2ins.SetUp();
-        result = overlayblendu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = overlayblendu8Gaudi2ins.runTest(m, n);
         overlayblendu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -756,7 +775,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"LinearBurnU8Gaudi2Test") ==0))))
     {
         linearburnu8Gaudi2ins.SetUp();
-        result = linearburnu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = linearburnu8Gaudi2ins.runTest(m, n);
         linearburnu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
@@ -773,7 +794,9 @@ int main(int argc, char** argv)
         && (strcmp(argv[2],"LinearDodgeU8Gaudi2Test") ==0))))
     {
         lineardodgeu8Gaudi2ins.SetUp();
-        result = lineardodgeu8Gaudi2ins.runTest();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = lineardodgeu8Gaudi2ins.runTest(m, n);
         lineardodgeu8Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)

@@ -29,10 +29,10 @@ void NormalBlendU8Gaudi2Test::normalblend_u8_reference_implementation(
    }
 }
 
-int NormalBlendU8Gaudi2Test::runTest()
+int NormalBlendU8Gaudi2Test::runTest(uint32_t m)
 {
     // a vector of 8k elements.
-    unsigned int tensor_shape[] = {8192};
+    unsigned int tensor_shape[] = {m};
 
     uint8_1DTensor base(tensor_shape);
     base.InitRand(0, 255);

@@ -10,7 +10,7 @@ class NormalBlendU8Gaudi2Test : public TestBase
 public:
     NormalBlendU8Gaudi2Test() {}
     ~NormalBlendU8Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m);
 
     inline static void normalblend_u8_reference_implementation(
             const uint8_1DTensor& base,

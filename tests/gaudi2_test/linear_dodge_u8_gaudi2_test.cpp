@@ -28,14 +28,14 @@ void LinearDodgeU8Gaudi2Test::lineardodge_u8_reference_implementation(
     }
 }
 
-int LinearDodgeU8Gaudi2Test::runTest()
+int LinearDodgeU8Gaudi2Test::runTest(uint32_t m, uint32_t n)
 {
     // 2D matrix of size 128x3
     // If the first dimension is multiple of 64, the test delivers optimal result
     // (most likely because 64-elements needs to be contiguous to read as a vec)
     // If I change the shape to 3x128, then test delivers poor result - no
     // vector operation.
-    unsigned int tensor_shape[] = {128, 3};
+    unsigned int tensor_shape[] = {m, n};
 
     uint8_2DTensor base(tensor_shape);
     base.InitRand(0, 255);

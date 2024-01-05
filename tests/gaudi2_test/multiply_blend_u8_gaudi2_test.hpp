@@ -10,7 +10,7 @@ class MultiplyBlendU8Gaudi2Test : public TestBase
 public:
     MultiplyBlendU8Gaudi2Test() {}
     ~MultiplyBlendU8Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m, uint32_t n);
 
     inline static void multiplyblend_u8_reference_implementation(
             const uint8_2DTensor& base,

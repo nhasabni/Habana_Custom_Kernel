@@ -10,7 +10,7 @@ class DissolveBlendF32Gaudi2Test : public TestBase
 public:
     DissolveBlendF32Gaudi2Test() {}
     ~DissolveBlendF32Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m, uint32_t n);
 
     inline static void dissolveblend_f32_reference_implementation(
             const float_2DTensor& base,

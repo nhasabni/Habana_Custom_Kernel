@@ -10,7 +10,7 @@ class LightenBlendU8Gaudi2Test : public TestBase
 public:
     LightenBlendU8Gaudi2Test() {}
     ~LightenBlendU8Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m, uint32_t n);
 
     inline static void lightenblend_u8_reference_implementation(
             const uint8_2DTensor& base,

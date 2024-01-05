@@ -10,7 +10,7 @@ class LinearBurnU8Gaudi2Test : public TestBase
 public:
     LinearBurnU8Gaudi2Test() {}
     ~LinearBurnU8Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m, uint32_t n);
 
     inline static void linearburn_u8_reference_implementation(
             const uint8_2DTensor& base,

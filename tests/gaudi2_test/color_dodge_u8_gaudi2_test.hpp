@@ -10,7 +10,7 @@ class ColorDodgeU8Gaudi2Test : public TestBase
 public:
     ColorDodgeU8Gaudi2Test() {}
     ~ColorDodgeU8Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m, uint32_t n);
 
     inline static void colordodge_u8_reference_implementation(
             const uint8_2DTensor& base,

@@ -10,7 +10,7 @@ class NormalBlendF32Gaudi2Test : public TestBase
 public:
     NormalBlendF32Gaudi2Test() {}
     ~NormalBlendF32Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m);
 
     inline static void normalblend_f32_reference_implementation(
             const float_1DTensor& base,

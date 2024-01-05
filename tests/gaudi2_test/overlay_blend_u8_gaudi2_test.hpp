@@ -10,7 +10,7 @@ class OverlayBlendU8Gaudi2Test : public TestBase
 public:
     OverlayBlendU8Gaudi2Test() {}
     ~OverlayBlendU8Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m, uint32_t n);
 
     inline static void overlayblend_u8_reference_implementation(
             const uint8_2DTensor& base,

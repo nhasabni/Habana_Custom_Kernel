@@ -10,7 +10,7 @@ class ColorBurnU8Gaudi2Test : public TestBase
 public:
     ColorBurnU8Gaudi2Test() {}
     ~ColorBurnU8Gaudi2Test() {}
-    int runTest();
+    int runTest(uint32_t m, uint32_t n);
 
     inline static void colorburn_u8_reference_implementation(
             const uint8_2DTensor& base,

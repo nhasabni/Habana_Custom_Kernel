@@ -39,14 +39,14 @@ void DissolveBlendF32Gaudi2Test::dissolveblend_f32_reference_implementation(
     }
 }
 
-int DissolveBlendF32Gaudi2Test::runTest()
+int DissolveBlendF32Gaudi2Test::runTest(uint32_t m, uint32_t n)
 {
     // 2D matrix of size 128x3
     // If the first dimension is multiple of 64, the test delivers optimal result
     // (most likely because 64-elements needs to be contiguous to read as a vec)
     // If I change the shape to 3x128, then test delivers poor result - no
     // vector operation.
-    unsigned int tensor_shape[] = {128, 3};
+    unsigned int tensor_shape[] = {m, n};
 
     float_2DTensor base(tensor_shape);
     base.InitRand(-10.0f, 10.0f);
