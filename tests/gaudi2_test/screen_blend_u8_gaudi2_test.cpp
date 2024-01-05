@@ -19,34 +19,42 @@
 // }
 
 void ScreenBlendU8Gaudi2Test::screenblend_u8_reference_implementation(
-        const uint8_1DTensor& base,
-        const uint8_1DTensor& active,
-        uint8_1DTensor& out)
+        const uint8_2DTensor& base,
+        const uint8_2DTensor& active,
+        uint8_2DTensor& out)
 {
    int coords[5] = {0};
 
-   for (unsigned pixel = 0; pixel < base.Size(0); pixel++) {
-      coords[0] = pixel;
-      uint8_t x = (active.ElementAt(coords) * base.ElementAt(coords)) / 255;
-      uint8_t y = active.ElementAt(coords) + base.ElementAt(coords) - x;
-      out.SetElement(coords, y);
+   int maxRows = out.Size(0);
+    int maxCols = out.Size(1);
+
+    for (int row = 0; row < maxRows; row++) {
+        for (int col = 0; col < maxCols; col++) {
+            coords[0] = row; coords[1] = col;
+            uint8_t x = (active.ElementAt(coords) * base.ElementAt(coords)) / 255;
+            uint8_t y = active.ElementAt(coords) + base.ElementAt(coords) - x;
+            out.SetElement(coords, y);
+        }
    }
 }
 
 int ScreenBlendU8Gaudi2Test::runTest()
 {
-    // a vector of 8k elements.
-    const int width  = 256;
-    unsigned int tensor_shape[] = {width};
+    // 2D matrix of size 128x3
+    // If the first dimension is multiple of 64, the test delivers optimal result
+    // (most likely because 64-elements needs to be contiguous to read as a vec)
+    // If I change the shape to 3x128, then test delivers poor result - no
+    // vector operation.
+    unsigned int tensor_shape[] = {128, 3};
 
-    uint8_1DTensor base(tensor_shape);
+    uint8_2DTensor base(tensor_shape);
     base.InitRand(0, 255);
 
-    uint8_1DTensor active(tensor_shape);
+    uint8_2DTensor active(tensor_shape);
     active.InitRand(0, 255);
 
-    uint8_1DTensor out(tensor_shape);
-    uint8_1DTensor out_ref(tensor_shape);
+    uint8_2DTensor out(tensor_shape);
+    uint8_2DTensor out_ref(tensor_shape);
 
     // execute reference implementation of the kernel.
     screenblend_u8_reference_implementation(base, active, out_ref);

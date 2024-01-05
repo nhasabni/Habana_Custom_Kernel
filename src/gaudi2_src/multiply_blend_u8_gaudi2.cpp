@@ -57,52 +57,63 @@ gcapi::GlueCodeReturn_t MultiplyBlendU8Gaudi2::GetGcDefinitions(
     /*************************************************************************************
     *    Stage II -  Define index space geometry. Output size is same as input size.
     **************************************************************************************/
-    unsigned int outputSizes[1] = {0};
+    unsigned int outputSizes[2] = {0, 0};
     memcpy(outputSizes, in_defs->inputTensors[0].geometry.sizes, sizeof(outputSizes));
 
     // We operate on a block of 256 uchar elements at a time.
     int elementsInVec = 256;
-    out_defs->indexSpaceGeometry.dims = 1;
+    out_defs->indexSpaceGeometry.dims = 2;
 
     // round up to elementsInVec and divide by elementsInVec.
-    unsigned dim0Index = (outputSizes[0] + (elementsInVec - 1)) / elementsInVec;
-    out_defs->indexSpaceGeometry.sizes[0] = dim0Index;
+    unsigned maxDim0Index = (outputSizes[0] + (elementsInVec - 1)) / elementsInVec;
+    unsigned maxDim1Index = outputSizes[1];
+    out_defs->indexSpaceGeometry.sizes[0] = maxDim0Index;
+    out_defs->indexSpaceGeometry.sizes[1] = maxDim1Index;
 
     /*************************************************************************************
     *    Stage III -  Define index space mapping
     **************************************************************************************/
-   //
-   // Index space to tensor mapping looks like below: each index space operates on a block
-   // of 64 elements. 
-   //
-   // 0                                    64                                 128
-   // -------------------------------------------------------------------------------------
-   // |        Index 0                      |            Index 1              | ...
-   // -------------------------------------------------------------------------------------
+    //
+    // Index space to tensor mapping looks like below: each index space operates on a block
+    // of 64 elements. 
+    //
+    // 0                                          64                               128
+    //   -------------------------------------------------------------------------------------
+    //   |        Index (0,0)                      |            Index (0,1)              | ...
+    // 1 -------------------------------------------------------------------------------------
+    //   |        Index (1,0)                      |            Index (1,1)              | ...
+    // 2 -------------------------------------------------------------------------------------
+    // ...
 
-    // Index space mapping is calculated using f(i) = Ai + B
     // 'i' is the index space member and A/B constants to be defined.
-    out_defs->inputTensorAccessPattern[0].dim[0].dim      = 0;
-    out_defs->inputTensorAccessPattern[0].dim[0].start_a  = elementsInVec;
-    out_defs->inputTensorAccessPattern[0].dim[0].end_a    = elementsInVec;
-    out_defs->inputTensorAccessPattern[0].dim[0].start_b  = 0;
-    out_defs->inputTensorAccessPattern[0].dim[0].end_b    = elementsInVec - 1;
+    // More details here - https://docs.habana.ai/en/latest/TPC/TPC_User_Guide/TPC_Programming_Model.html#index-space-mapping
+    //
+    // Index space mapping is calculated using f(x) = start_a * x + start_b to end_a * x + end_b
+    //
+    gcapi::DimTransform_t dim1_mapping, dim0_mapping;
 
-    out_defs->inputTensorAccessPattern[1].dim[0].dim      = 0;
-    out_defs->inputTensorAccessPattern[1].dim[0].start_a  = elementsInVec;
-    out_defs->inputTensorAccessPattern[1].dim[0].end_a    = elementsInVec;
-    out_defs->inputTensorAccessPattern[1].dim[0].start_b  = 0;
-    out_defs->inputTensorAccessPattern[1].dim[0].end_b    = elementsInVec - 1;
+    // Because start_a and end_a are multipliers and because we operate on block of 1 element in dim1,
+    // start_a and end_a are 1.
+    // start_b and end_b are offsets inside 1-element block, so it needs to start at 0 and end at 0 also.   
+    dim0_mapping.dim = 0;
+    dim0_mapping.start_a = dim0_mapping.end_a = 1;
+    dim0_mapping.start_b = 0; dim0_mapping.end_b = 0;
+   
+    // Because start_a and end_a are multipliers and because we operate on block of 64 elements in dim0,
+    // start_a and end_a are elementsInVec.
+    // start_b and end_b are offsets inside a 64-element block, so it needs to start at 0 and go
+    // all the way upto elementsInVec - 1.
+    dim1_mapping.dim = 0;
+    dim1_mapping.start_a = dim1_mapping.end_a = elementsInVec;
+    dim1_mapping.start_b = 0; dim1_mapping.end_b = elementsInVec - 1;
 
-	// f_start f(i) = elementsInVec*i + 0;
-    // f_end   f(i) = elementsInVec*i + (elementsInVec - 1);
-    // Resource 0 (OFM) dim 0
-    out_defs->outputTensorAccessPattern[0].dim[0].dim      = 0;
-    out_defs->outputTensorAccessPattern[0].dim[0].start_a  = elementsInVec;
-    out_defs->outputTensorAccessPattern[0].dim[0].end_a    = elementsInVec;
-    out_defs->outputTensorAccessPattern[0].dim[0].start_b  = 0;
-    out_defs->outputTensorAccessPattern[0].dim[0].end_b    = elementsInVec - 1;
-
+    out_defs->inputTensorAccessPattern[0].dim[0] = dim0_mapping;
+    out_defs->inputTensorAccessPattern[0].dim[1] = dim1_mapping;
+    out_defs->inputTensorAccessPattern[1].dim[0] = dim0_mapping;
+    out_defs->inputTensorAccessPattern[1].dim[1] = dim1_mapping;
+    out_defs->outputTensorAccessPattern[0].dim[0] = dim0_mapping;
+    out_defs->outputTensorAccessPattern[0].dim[1] = dim1_mapping;
+    
     /*************************************************************************************
     *    Stage IV -  define scalar parameters
     **************************************************************************************/

@@ -32,8 +32,7 @@ void NormalBlendU8Gaudi2Test::normalblend_u8_reference_implementation(
 int NormalBlendU8Gaudi2Test::runTest()
 {
     // a vector of 8k elements.
-    const int width  = 256;
-    unsigned int tensor_shape[] = {width};
+    unsigned int tensor_shape[] = {8192};
 
     uint8_1DTensor base(tensor_shape);
     base.InitRand(0, 255);

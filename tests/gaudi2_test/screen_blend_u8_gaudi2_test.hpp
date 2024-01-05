@@ -13,9 +13,9 @@ public:
     int runTest();
 
     inline static void screenblend_u8_reference_implementation(
-            const uint8_1DTensor& base,
-            const uint8_1DTensor& active,
-            uint8_1DTensor& out);
+            const uint8_2DTensor& base,
+            const uint8_2DTensor& active,
+            uint8_2DTensor& out);
 private:
     ScreenBlendU8Gaudi2Test(const ScreenBlendU8Gaudi2Test& other) = delete;
     ScreenBlendU8Gaudi2Test& operator=(const ScreenBlendU8Gaudi2Test& other) = delete;

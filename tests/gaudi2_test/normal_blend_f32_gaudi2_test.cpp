@@ -29,8 +29,7 @@ void NormalBlendF32Gaudi2Test::normalblend_f32_reference_implementation(
 int NormalBlendF32Gaudi2Test::runTest()
 {
     // a vector of 8k elements.
-    const int width  = 8192;
-    unsigned int tensor_shape[] = {width};
+    unsigned int tensor_shape[] = {8192};
 
     float_1DTensor base(tensor_shape);
     base.InitRand(-10.0f, 10.0f);

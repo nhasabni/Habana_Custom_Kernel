@@ -60,15 +60,20 @@ void main(tensor base, tensor active, tensor out, unsigned char opacity) {
  // Our index space operates on the basis of vec_len of 256.
  unsigned vec_len = 256;
 
- #pragma loop_unroll(8)
  for(int i = index_space_start[0]; i < index_space_end[0]; i++) {
-    // index space mapping
-    inputCoord[0] = outputCoord[0] = (i * vec_len);
+    #pragma loop_unroll(4)
+    for (int j = index_space_start[1]; j < index_space_end[1]; j++) {
+      // index space mapping
+      // coordinate 0 is for dim0.
+      inputCoord[0] = outputCoord[0] = (i * vec_len);
+      // coordinate 1 is for dim1.
+      inputCoord[1] = outputCoord[1] = j;
 
-    uchar256 b = v_u8_ld_tnsr_b(inputCoord, base);
-    uchar256 a = v_u8_ld_tnsr_b(inputCoord, active);
-    uchar256 c = Screen8x8(b, a);
-    
-    v_u8_st_tnsr(outputCoord, out, c);
+      uchar256 b = v_u8_ld_tnsr_b(inputCoord, base);
+      uchar256 a = v_u8_ld_tnsr_b(inputCoord, active);
+      uchar256 c = Screen8x8(b, a);
+      
+      v_u8_st_tnsr(outputCoord, out, c);
+    }
   }
 }

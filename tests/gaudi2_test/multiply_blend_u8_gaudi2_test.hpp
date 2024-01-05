@@ -13,9 +13,9 @@ public:
     int runTest();
 
     inline static void multiplyblend_u8_reference_implementation(
-            const uint8_1DTensor& base,
-            const uint8_1DTensor& active,
-            uint8_1DTensor& out);
+            const uint8_2DTensor& base,
+            const uint8_2DTensor& active,
+            uint8_2DTensor& out);
 private:
     MultiplyBlendU8Gaudi2Test(const MultiplyBlendU8Gaudi2Test& other) = delete;
     MultiplyBlendU8Gaudi2Test& operator=(const MultiplyBlendU8Gaudi2Test& other) = delete;
