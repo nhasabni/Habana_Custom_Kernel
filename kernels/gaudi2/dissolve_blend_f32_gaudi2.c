@@ -17,7 +17,7 @@
 
 #pragma tpc_printf (enable)
 
-void main(tensor base, tensor active, tensor out) {
+void main(tensor base, tensor active, tensor rand, tensor out, float opacity) {
  int5 index_space_start = get_index_space_offset();
  int5 index_space_end = index_space_start + get_index_space_size();
 
@@ -27,6 +27,7 @@ void main(tensor base, tensor active, tensor out) {
  // We operate on a block of 64 elements at a time.
  // Our index space operates on the basis of vec_len of 64.
  unsigned vec_len = 64;
+ float64 zero_vec = 0.0; // scalar to vector broadcasting
 
  for(int i = index_space_start[0]; i < index_space_end[0]; i++) {
     #pragma loop_unroll(4)
@@ -39,10 +40,14 @@ void main(tensor base, tensor active, tensor out) {
 
       float64 b = v_f32_ld_tnsr_b(inputCoord, base);
       float64 a = v_f32_ld_tnsr_b(inputCoord, active);
+      float64 r = v_f32_ld_tnsr_b(inputCoord, rand);
+
+      float64 opacity_vec = opacity;  // scalar to vector broadcasting
+      float64 diff_vec = v_f32_sub_b(opacity_vec, r);
 
       // We operate on a block of 64 elements at a time.
       // https://docs.habana.ai/en/latest/TPC/TPC_Intrinsics_Guide/Select.html#
-      // float64 v_f32_sel_leq_f32_vb(float64 a, float64 b, float64 c, float64 d, 
+      // float64 v_f32_sel_geq_f32_vb(float64 a, float64 b, float64 c, float64 d, 
       //         int switches, float64 income, bool64 predicate, bool polarity=0)
       // a - Source #1 to compare (SRC1).
       // b - Source #2 to compare (SRC2).
@@ -55,9 +60,7 @@ void main(tensor base, tensor active, tensor out) {
       //
       // return - One of the sources - c or d with respect to the comparison 
       // of the two other sources - a and b.
-      float64 income = 0;
-      bool predicate = 1;
-      float64 result = v_f32_sel_leq_f32_b(b, a, b, a, 0 /*switches*/, income, predicate);
+      float64 result = v_f32_sel_geq_f32_b(diff_vec, zero_vec, a, b);
       v_f32_st_tnsr(outputCoord, out, result);
     }
   }

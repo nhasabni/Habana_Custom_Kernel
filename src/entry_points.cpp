@@ -36,6 +36,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "kl_div_all.hpp"
 #include "normal_blend_f32_gaudi2.hpp"
 #include "normal_blend_u8_gaudi2.hpp"
+#include "dissolve_blend_f32_gaudi2.hpp"
 #include "darken_blend_u8_gaudi2.hpp"
 #include "multiply_blend_u8_gaudi2.hpp"
 #include "lighten_blend_u8_gaudi2.hpp"
@@ -141,6 +142,8 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            normalblendf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_NORMAL_BLEND_F32]);
            NormalBlendU8Gaudi2 normalblendu8g2Instance;
            normalblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_NORMAL_BLEND_U8]);
+           DissolveBlendF32Gaudi2 dissolveblendf32g2Instance;
+           dissolveblendf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_DISSOLVE_BLEND_F32]);
            DarkenBlendU8Gaudi2 darkenblendu8g2Instance;
            darkenblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_DARKEN_BLEND_U8]);
            MultiplyBlendU8Gaudi2 multiplyblendu8g2Instance;
@@ -431,6 +434,13 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
     if (strcmp(params->nodeName, kernelName) == 0)
     {
         return normalblendu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    DissolveBlendF32Gaudi2 dissolveblendf32g2Instance;
+    dissolveblendf32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return dissolveblendf32g2Instance.GetGcDefinitions(params, instance);
     }
 
     DarkenBlendU8Gaudi2 darkenblendu8g2Instance;

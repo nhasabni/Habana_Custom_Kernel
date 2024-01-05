@@ -14,7 +14,11 @@ class DissolveBlendF32Gaudi2
                      gcapi::HabanaKernelInstantiation_t* out_defs);
 
         virtual gcapi::GlueCodeReturn_t GetKernelName(
-                char kernelName [gcapi::MAX_NODE_NAME]);                            
+                char kernelName [gcapi::MAX_NODE_NAME]);
+
+        struct DissolveBlendParam {
+            float opacity;
+        };                           
 
     private:
         DissolveBlendF32Gaudi2(const DissolveBlendF32Gaudi2& other) = delete;

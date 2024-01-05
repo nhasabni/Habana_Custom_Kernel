@@ -36,6 +36,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "kl_div_all_test.hpp"
 #include "normal_blend_f32_gaudi2_test.hpp"
 #include "normal_blend_u8_gaudi2_test.hpp"
+#include "dissolve_blend_f32_gaudi2_test.hpp"
 #include "darken_blend_u8_gaudi2_test.hpp"
 #include "multiply_blend_u8_gaudi2_test.hpp"
 #include "lighten_blend_u8_gaudi2_test.hpp"
@@ -94,6 +95,7 @@ int main(int argc, char** argv)
             "SoftMaxBF16Gaudi2Test      Run SoftMaxBF16Gaudi2Test only   " << std::endl <<
             "NormalBlendF32Gaudi2Test   Run NormalBlendF32Gaudi2Test only " << std::endl <<
             "NormalBlendU8Gaudi2Test    Run NormalBlendU8Gaudi2Test only " << std::endl <<
+            "DissolveBlendF32Gaudi2Test Run DissolveBlendF32Gaudi2Test only " << std::endl <<
             "DarkenBlendU8Gaudi2Test    Run DarkenBlendU8Gaudi2Test only " << std::endl <<
             "MultiplyBlendU8Gaudi2Test  Run DarkenBlendU8Gaudi2Test only " << std::endl <<
             "LightenBlendU8Gaudi2Test   Run LightenBlendU8Gaudi2Test only " << std::endl <<
@@ -603,6 +605,23 @@ int main(int argc, char** argv)
         normalblendu8Gaudi2ins.SetUp();
         result = normalblendu8Gaudi2ins.runTest();
         normalblendu8Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    DissolveBlendF32Gaudi2Test dissolveblendf32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"DissolveBlendF32Gaudi2Test") ==0))))
+    {
+        dissolveblendf32Gaudi2ins.SetUp();
+        result = dissolveblendf32Gaudi2ins.runTest();
+        dissolveblendf32Gaudi2ins.TearDown();
         testCount ++;
         if (result != 0)
         {

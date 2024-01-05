@@ -15,7 +15,9 @@ public:
     inline static void dissolveblend_f32_reference_implementation(
             const float_2DTensor& base,
             const float_2DTensor& active,
-            float_2DTensor& out);
+            const float_2DTensor& rand,
+            float_2DTensor& out,
+            DissolveBlendF32Gaudi2::DissolveBlendParam& param_def);
 private:
     DissolveBlendF32Gaudi2Test(const DissolveBlendF32Gaudi2Test& other) = delete;
     DissolveBlendF32Gaudi2Test& operator=(const DissolveBlendF32Gaudi2Test& other) = delete;

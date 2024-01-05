@@ -118,10 +118,10 @@ int OverlayBlendU8Gaudi2Test::runTest()
     // execute a simulation of the kernel using TPC simulator,
     TestBase::RunSimulation(vec, m_in_defs, m_out_defs);
     ReleaseKernelNames(kernelNames, kernelCount);
-    base.Print(0);
-    active.Print(0);
-    out.Print(0);
-    out_ref.Print(0);
+    //base.Print(0);
+    //active.Print(0);
+    //out.Print(0);
+    //out_ref.Print(0);
     for (int element = 0 ; element <  out_ref.ElementCount() ; element++)
     {
         if (abs(out.Data()[element] - out_ref.Data()[element]) > 1)

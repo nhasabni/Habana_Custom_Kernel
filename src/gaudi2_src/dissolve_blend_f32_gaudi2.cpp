@@ -19,14 +19,16 @@ gcapi::GlueCodeReturn_t DissolveBlendF32Gaudi2::GetGcDefinitions(
             gcapi::HabanaKernelInstantiation_t* out_defs)
 {
     gcapi::GlueCodeReturn_t retVal;
+    DissolveBlendParam* param_def = static_cast<DissolveBlendParam*>(in_defs->NodeParams);
 
     /*************************************************************************************
     *   Stage I - validate input
     **************************************************************************************/
-    //validate correct amount of input tensors
-    if (in_defs->inputTensorNr != 2)
+    //validate correct amount of input tensors: we pass rand values as a tensor to this kernel.
+    // This is because TPCC does not have intrinsic for generating rand values in a kernel.
+    if (in_defs->inputTensorNr != 3)
     {
-        in_defs->inputTensorNr  = 2;
+        in_defs->inputTensorNr  = 3;
         return gcapi::GLUE_INCOMPATIBLE_INPUT_COUNT;
     }
     //validate correct amount of output tensors
@@ -37,18 +39,22 @@ gcapi::GlueCodeReturn_t DissolveBlendF32Gaudi2::GetGcDefinitions(
     }
 
     //validate matrix dimensions
-    if (in_defs->inputTensors[0].geometry.sizes[0] != 
-        in_defs->inputTensors[1].geometry.sizes[0])
+    if ((in_defs->inputTensors[0].geometry.sizes[0] != 
+        in_defs->inputTensors[1].geometry.sizes[0]) ||
+        (in_defs->inputTensors[1].geometry.sizes[0] != 
+        in_defs->inputTensors[2].geometry.sizes[0]))
     {
         return gcapi::GLUE_INCOMPATIBLE_INPUT_SIZE;
     }
     // validate input and output data type
     if (in_defs->inputTensors[0].dataType != gcapi::DATA_F32 ||
         in_defs->inputTensors[1].dataType != gcapi::DATA_F32 ||
+        in_defs->inputTensors[2].dataType != gcapi::DATA_F32 ||
         in_defs->outputTensors[0].dataType != gcapi::DATA_F32)
     {
         in_defs->inputTensors[0].dataType = gcapi::DATA_F32;
         in_defs->inputTensors[1].dataType = gcapi::DATA_F32;
+        in_defs->inputTensors[2].dataType = gcapi::DATA_F32;
         in_defs->outputTensors[0].dataType = gcapi::DATA_F32;
         return gcapi::GLUE_INCOMPATIBLE_DATA_TYPE;
     }
@@ -114,13 +120,17 @@ gcapi::GlueCodeReturn_t DissolveBlendF32Gaudi2::GetGcDefinitions(
     out_defs->inputTensorAccessPattern[0].dim[1] = dim1_mapping;
     out_defs->inputTensorAccessPattern[1].dim[0] = dim0_mapping;
     out_defs->inputTensorAccessPattern[1].dim[1] = dim1_mapping;
+    out_defs->inputTensorAccessPattern[2].dim[0] = dim0_mapping;
+    out_defs->inputTensorAccessPattern[2].dim[1] = dim1_mapping;
     out_defs->outputTensorAccessPattern[0].dim[0] = dim0_mapping;
     out_defs->outputTensorAccessPattern[0].dim[1] = dim1_mapping;
 
     /*************************************************************************************
     *    Stage IV -  define scalar parameters
     **************************************************************************************/
-	
+	out_defs->kernel.paramsNr = sizeof(*param_def)/ sizeof(float);
+    memcpy(&( out_defs->kernel.scalarParams[0]), param_def, sizeof(*param_def));
+
 	/*************************************************************************************
     *    Stage V -  Load ISA into the descriptor.
     **************************************************************************************/
