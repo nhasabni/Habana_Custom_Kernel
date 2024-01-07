@@ -33,7 +33,7 @@ uchar256 Mul8x8Div255(uchar256 a, uchar256 b) {
   f2.v3 = v_f32_mul_b(f1.v3, reciprocal_255);
   f2.v4 = v_f32_mul_b(f1.v4, reciprocal_255);
 
-  uchar256 uc2 = convert_float256_to_uchar256(f2, SW_RD);
+  uchar256 uc2 = convert_float256_to_uchar256(f2, 0);
   return uc2;
 }
 

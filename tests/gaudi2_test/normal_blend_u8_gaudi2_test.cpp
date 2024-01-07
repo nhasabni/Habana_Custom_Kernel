@@ -99,9 +99,19 @@ int NormalBlendU8Gaudi2Test::runTest(uint32_t m)
     //out_ref.Print(0);
     for (int element = 0 ; element <  out_ref.ElementCount() ; element++)
     {
-        if (abs(out.Data()[element] - out_ref.Data()[element]) > 1)
+        // - Floating point based division in Gaudi leading to precision issues.
+        // E.g., for NormalBlendU8 when both base and active=255, and opacity=21.
+        // Equation says: (opacity * active)/255 + ((255 - opacity) * base)/255 = 21 + 234 = 255.
+        // But when float type is used in Gaudi, it first calculates 1/255, and then
+        // multiplies it with (21 * 255), which produces 20.99, while (234 * 255)/255 would produce
+        // 233.99. If we round this nearest numbers, it works fine. But then ref code is not using float
+        // type for division and hence would round 20.99 to 20, and 233.99 to 233 instead of 234.
+        // This leads to max difference of 2 in out and out_ref.
+        if (abs(out.Data()[element] - out_ref.Data()[element]) > 2)
         {
-            std::cout << "Normal Blend U8 test failed!!" << std::endl;
+            std::cout << "Normal Blend U8 test failed (element:" << element << ")" << std::endl;
+            std::cout << "b:" << (uint32_t) base.Data()[element] << ",a:" << (uint32_t) active.Data()[element] << std::endl;
+            std::cout << "out: " << (uint32_t) out.Data()[element] << ", out_ref:" << (uint32_t) out_ref.Data()[element] << std::endl;
             return -1;
         }
     }
