@@ -47,6 +47,15 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "linear_burn_u8_gaudi2.hpp"
 #include "linear_dodge_u8_gaudi2.hpp"
 
+#include "llama_elemwise_mul_f32_gaudi2.hpp"
+#include "llama_softmax_part1_f32_gaudi2.hpp"
+#include "llama_softmax_part2_f32_gaudi2.hpp"
+#include "llama_softmax_part3_f32_gaudi2.hpp"
+#include "llama_softmax_part4_f32_gaudi2.hpp"
+#include "llama_rmsnorm_part1_f32_gaudi2.hpp"
+#include "llama_rmsnorm_part2_f32_gaudi2.hpp"
+#include "llama_silu_f32_gaudi2.hpp"
+
 #include "entry_points.hpp"
 
 extern "C"
@@ -162,6 +171,23 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            lineardodgeu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_LINEAR_DODGE_U8]);
            OverlayBlendU8Gaudi2 overlayblendu8g2Instance;
            overlayblendu8g2Instance.GetKernelName(names[GAUDI2_KERNEL_OVERLAY_BLEND_U8]);
+
+           LlamaElemwiseMulF32Gaudi2 llamaelemwisemulf32g2Instance;
+           llamaelemwisemulf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_ELEMWISE_MUL_F32]);
+           LlamaSoftmaxPart1F32Gaudi2 llamasoftmaxpart1f32g2Instance;
+           llamasoftmaxpart1f32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_SOFTMAX_PART1_F32]);
+           LlamaSoftmaxPart2F32Gaudi2 llamasoftmaxpart2f32g2Instance;
+           llamasoftmaxpart2f32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_SOFTMAX_PART2_F32]);
+           LlamaSoftmaxPart3F32Gaudi2 llamasoftmaxpart3f32g2Instance;
+           llamasoftmaxpart3f32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_SOFTMAX_PART3_F32]);
+           LlamaSoftmaxPart4F32Gaudi2 llamasoftmaxpart4f32g2Instance;
+           llamasoftmaxpart4f32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_SOFTMAX_PART4_F32]);
+           LlamaRmsnormPart1F32Gaudi2 llamarmsnormpart1f32g2Instance;
+           llamarmsnormpart1f32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_RMSNORM_PART1_F32]);
+           LlamaRmsnormPart2F32Gaudi2 llamarmsnormpart2f32g2Instance;
+           llamarmsnormpart2f32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_RMSNORM_PART2_F32]);
+           LlamaSiluF32Gaudi2 llamasiluf32g2Instance;
+           llamasiluf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_SILU_F32]);
         }
 
         if (kernelCount != nullptr)
@@ -504,6 +530,62 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
     if (strcmp(params->nodeName, kernelName) == 0)
     {
         return overlayblendu8g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaElemwiseMulF32Gaudi2 llamaelemwisemulf32g2Instance;
+    llamaelemwisemulf32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamaelemwisemulf32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaSoftmaxPart1F32Gaudi2 llamasoftmaxpart1f32g2Instance;
+    llamasoftmaxpart1f32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamasoftmaxpart1f32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaSoftmaxPart2F32Gaudi2 llamasoftmaxpart2f32g2Instance;
+    llamasoftmaxpart2f32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamasoftmaxpart2f32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaSoftmaxPart3F32Gaudi2 llamasoftmaxpart3f32g2Instance;
+    llamasoftmaxpart3f32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamasoftmaxpart3f32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaSoftmaxPart4F32Gaudi2 llamasoftmaxpart4f32g2Instance;
+    llamasoftmaxpart4f32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamasoftmaxpart4f32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaRmsnormPart1F32Gaudi2 llamaRmsnormPart1f32g2Instance;
+    llamaRmsnormPart1f32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamaRmsnormPart1f32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaRmsnormPart2F32Gaudi2 llamaRmsnormPart2f32g2Instance;
+    llamaRmsnormPart2f32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamaRmsnormPart2f32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    LlamaSiluF32Gaudi2 llamasiluf32g2Instance;
+    llamasiluf32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return llamasiluf32g2Instance.GetGcDefinitions(params, instance);
     }
 
     return gcapi::GLUE_NODE_NOT_FOUND;

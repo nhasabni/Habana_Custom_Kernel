@@ -35,6 +35,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "searchsorted_f32_test.hpp"
 #include "gather_fwd_i32_test.hpp"
 #include "kl_div_all_test.hpp"
+
 #include "normal_blend_f32_gaudi2_test.hpp"
 #include "normal_blend_u8_gaudi2_test.hpp"
 #include "dissolve_blend_f32_gaudi2_test.hpp"
@@ -47,6 +48,15 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "overlay_blend_u8_gaudi2_test.hpp"
 #include "linear_burn_u8_gaudi2_test.hpp"
 #include "linear_dodge_u8_gaudi2_test.hpp"
+
+#include "llama_elemwise_mul_f32_gaudi2_test.hpp"
+#include "llama_softmax_part1_f32_gaudi2_test.hpp"
+#include "llama_softmax_part2_f32_gaudi2_test.hpp"
+#include "llama_softmax_part3_f32_gaudi2_test.hpp"
+#include "llama_softmax_part4_f32_gaudi2_test.hpp"
+#include "llama_rmsnorm_part1_f32_gaudi2_test.hpp"
+#include "llama_rmsnorm_part2_f32_gaudi2_test.hpp"
+#include "llama_silu_f32_gaudi2_test.hpp"
 
 int main(int argc, char** argv)
 {
@@ -105,8 +115,17 @@ int main(int argc, char** argv)
             "ScreenBlendU8Gaudi2Test    Run ScreenBlendU8Gaudi2Test only " << std::endl <<
             "OverlayBlendU8Gaudi2Test   Run OverlayBlendU8Gaudi2Test only " << std::endl <<
             "LinearBurnU8Gaudi2Test     Run LinearBurnU8Gaudi2Test only " << std::endl <<
-            "LinearDodgeU8Gaudi2Test    Run LinearDodgeU8Gaudi2Test only " << std::endl;
-            
+            "LinearDodgeU8Gaudi2Test    Run LinearDodgeU8Gaudi2Test only " << std::endl <<
+
+            "LlamaElemwiseMulF32Gaudi2Test   Run LLamaElemwiseMulGaudi2Test only" << std::endl <<
+            "LlamaSoftmaxPart1F32Gaudi2Test  Run LLamaSoftmaxPart1Gaudi2Test only" << std::endl <<
+            "LlamaSoftmaxPart2F32Gaudi2Test  Run LLamaSoftmaxPart2Gaudi2Test only" << std::endl <<
+            "LlamaSoftmaxPart3F32Gaudi2Test  Run LLamaSoftmaxPart3Gaudi2Test only" << std::endl <<
+            "LlamaSoftmaxPart4F32Gaudi2Test  Run LLamaSoftmaxPart4Gaudi2Test only" << std::endl <<
+            "LlamaRmsnormPart1F32Gaudi2Test  Run LLamaRmsnormPart1Gaudi2Test only" << std::endl <<
+            "LlamaRmsnormPart2F32Gaudi2Test  Run LLamaRmsnormPart2Gaudi2Test only" << std::endl <<
+            "LlamaSiluF32Gaudi2Test          Run LLamaSiluGaudi2Test only" << std::endl;
+
         exit(0);
     }
 
@@ -804,6 +823,151 @@ int main(int argc, char** argv)
             return result;
         }
     }
+
+    LlamaElemwiseMulF32Gaudi2Test llamaelemwisemulf32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaElemwiseMulF32Gaudi2Test") ==0))))
+    {
+        llamaelemwisemulf32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamaelemwisemulf32Gaudi2ins.runTest(m);
+        llamaelemwisemulf32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LlamaSoftmaxPart1F32Gaudi2Test llamasoftmaxpart1f32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaSoftmaxPart1F32Gaudi2Test") ==0))))
+    {
+        llamasoftmaxpart1f32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamasoftmaxpart1f32Gaudi2ins.runTest(m);
+        llamasoftmaxpart1f32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LlamaSoftmaxPart2F32Gaudi2Test llamasoftmaxpart2f32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaSoftmaxPart2F32Gaudi2Test") ==0))))
+    {
+        llamasoftmaxpart2f32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamasoftmaxpart2f32Gaudi2ins.runTest(m);
+        llamasoftmaxpart2f32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LlamaSoftmaxPart3F32Gaudi2Test llamasoftmaxpart3f32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaSoftmaxPart3F32Gaudi2Test") ==0))))
+    {
+        llamasoftmaxpart3f32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamasoftmaxpart3f32Gaudi2ins.runTest(m);
+        llamasoftmaxpart3f32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LlamaSoftmaxPart4F32Gaudi2Test llamasoftmaxpart4f32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaSoftmaxPart4F32Gaudi2Test") ==0))))
+    {
+        llamasoftmaxpart4f32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamasoftmaxpart4f32Gaudi2ins.runTest(m);
+        llamasoftmaxpart4f32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LlamaRmsnormPart1F32Gaudi2Test llamarmsnormpart1f32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaRmsnormPart1F32Gaudi2Test") ==0))))
+    {
+        llamarmsnormpart1f32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamarmsnormpart1f32Gaudi2ins.runTest(m);
+        llamarmsnormpart1f32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LlamaRmsnormPart2F32Gaudi2Test llamarmsnormpart2f32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaRmsnormPart2F32Gaudi2Test") ==0))))
+    {
+        llamarmsnormpart2f32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamarmsnormpart2f32Gaudi2ins.runTest(m);
+        llamarmsnormpart2f32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    LlamaSiluF32Gaudi2Test llamasiluf32Gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"LlamaSiluF32Gaudi2Test") ==0))))
+    {
+        llamasiluf32Gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = llamasiluf32Gaudi2ins.runTest(m);
+        llamasiluf32Gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
 
     std::cout << "All " << testCount  <<" tests pass!" <<std::endl;
     return 0;
