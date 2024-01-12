@@ -32,8 +32,7 @@ void main(tensor input, tensor weight, tensor output) {
     inputCoord[0] = i;
 
     float64 a = v_f32_ld_tnsr_b(inputCoord, input);
-    float64 w = v_f32_ld_tnsr_b(inputCoord, weight);
-    float64 o = v_f32_mul_b(a, w);
+    float64 o = v_f32_mul_b(a, a);
     float64 sum_vec = v_f32_reduce_add(o);
     ss = v_f32_add_b(ss, sum_vec);
   }

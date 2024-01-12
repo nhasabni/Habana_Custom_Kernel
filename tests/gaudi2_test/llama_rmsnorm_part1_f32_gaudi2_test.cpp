@@ -18,7 +18,7 @@ void LlamaRmsnormPart1F32Gaudi2Test::llamarmsnormpart1_f32_reference_implementat
    float ss = 0.0;
    for (unsigned i = 0; i < input.Size(0); i++) {
       input_coords[0] = i;
-      ss += (input.ElementAt(input_coords) * weight.ElementAt(input_coords));
+      ss += (input.ElementAt(input_coords) * input.ElementAt(input_coords));
    }
    out.SetElement(output_coords, ss);
 }
@@ -82,7 +82,6 @@ int LlamaRmsnormPart1F32Gaudi2Test::runTest(uint32_t m)
     TestBase::RunSimulation(vec, m_in_defs, m_out_defs);
     ReleaseKernelNames(kernelNames, kernelCount);
     input.Print(0);
-    weight.Print(0);
     out.Print(0);
     out_ref.Print(0);
 
