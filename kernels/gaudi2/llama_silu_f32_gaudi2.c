@@ -1,7 +1,7 @@
 // vector<float> silu(vector<float> input, int hidden_dim) {
 //     vector<float> output;
 //     for (int i = 0; i < hidden_dim; i++) {
-//         float curr = 1 / (1 + sqrt(input[i])) * input[i];
+//         float curr = 1 / (1 + exp(-1 * input[i])) * input[i];
 //         output.push_back(curr);
 //     }
 //     return output;
@@ -22,6 +22,7 @@ void main(tensor input, tensor output) {
  // Our index space operates on the basis of vec_len of 64.
  unsigned vec_len = 64;
  float64 one_vec = 1.0;  // scalar to vector broadcast
+ float64 minus_one_vec = -1.0;  // scalar to vector broadcast
 
  #pragma loop_unroll(8)
  for(int i = index_space_start[0]; i < index_space_end[0]; i++) {
@@ -29,10 +30,11 @@ void main(tensor input, tensor output) {
     inputCoord[0] = outputCoord[0] = (i * vec_len);
 
     float64 a = v_f32_ld_tnsr_b(inputCoord, input);
+    float64 b = v_f32_mul_b(a, minus_one_vec);
 
-    float64 sqrt_a = v_sqrt_fast_f32(a);
-    float64 sqrt_a_plus_1 = v_f32_add_b(sqrt_a, one_vec);
-    float64 a_div_sqrt_a_plus_1 = v_div_fast_f32(a, sqrt_a_plus_1);
+    float64 exp_neg_a = v_exp_fast_f32(b);
+    float64 exp_neg_a_plus_1 = v_f32_add_b(exp_neg_a, one_vec);
+    float64 a_div_sqrt_a_plus_1 = v_div_fast_f32(a, exp_neg_a_plus_1);
 
     v_f32_st_tnsr(outputCoord, output, a_div_sqrt_a_plus_1);
   }

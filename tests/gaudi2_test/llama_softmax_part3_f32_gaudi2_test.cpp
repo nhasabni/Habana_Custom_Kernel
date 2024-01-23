@@ -84,6 +84,7 @@ int LlamaSoftmaxPart3F32Gaudi2Test::runTest(uint32_t m)
 
     // Because this is a reduction kernel, we only care about first element of the outputs.
     #if 0
+    // Disabling this check because we do not perform the last reduction over all the outputs.
     if (abs(out.Data()[0] - out_ref.Data()[0]) > 1e-2)
     {
         std::cout << "LLaMa Softmax Part3 test failed !!" << std::endl;
