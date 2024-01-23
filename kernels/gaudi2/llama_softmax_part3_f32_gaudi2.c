@@ -9,7 +9,8 @@
 #pragma tpc_printf(enable)
 
 void main(tensor input, tensor output) {
- int input_size = get_dim_size(input, 0);
+ int5 index_space_start = get_index_space_offset();
+ int5 index_space_end = index_space_start + get_index_space_size();
 
  int5 inputCoord = { 0 };
  int5 outputCoord = { 0 };
@@ -29,16 +30,17 @@ void main(tensor input, tensor output) {
  // potentially perform a tree reduction here by leveraging multiple TPC cores. But
  // for the time being, I will not get into this.
  #pragma loop_unroll(8)
- for(int i = 0; i < input_size; i += vec_len) {
-    inputCoord[0] = i;
+ for(int i = index_space_start[0]; i < index_space_end[0]; i++) {
+    inputCoord[0] = (i * vec_len);
 
     float64 a = v_f32_ld_tnsr_b(inputCoord, input);
-    float64 a_sum = v_f32_reduce_add(a);  // sum of 64 floats
-    overall_sum = v_f32_add_b(overall_sum, a_sum);
+    overall_sum = v_f32_add_b(overall_sum, a);
   }
 
   // Because this is a reduction kernel, we only care about 1st element of the
   // output tensor. Since we cannot access only 1 element of overall_sum, we
   // write 64 elements in the output. Rest of the output elements are left as 0.
+  outputCoord[0] = index_space_start[0] * vec_len;
+  overall_sum = v_f32_reduce_add(overall_sum);  // sum of 64 floats
   v_f32_st_tnsr(outputCoord, output, overall_sum);
 }

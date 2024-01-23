@@ -48,17 +48,15 @@ gcapi::GlueCodeReturn_t LlamaSoftmaxPart3F32Gaudi2::GetGcDefinitions(
     /*************************************************************************************
     *    Stage II -  Define index space geometry. Output size is same as input size.
     **************************************************************************************/
-    unsigned int inputSizes[1] = {0};
-    inputSizes[0] = in_defs->inputTensors[0].geometry.sizes[0];
+    unsigned int outputSizes[1] = {0};
+    memcpy(outputSizes, in_defs->inputTensors[0].geometry.sizes, sizeof(outputSizes));
 
     // We operate on a block of 64 float elements at a time.
+    int elementsInVec = 64;
     out_defs->indexSpaceGeometry.dims = 1;
 
-    // Because this is a reduction kernel, we do not partition the input space into
-    // different index spaces. So the index spaces goes from [0-1]. This ensures that
-    // the kernel is invoked only once. Setting for start_* and end_* below ensure
-    // that that single invocation accesses whole of the input/output tensors.
-    unsigned dim0Index = 1;
+    // round up to elementsInVec and divide by elementsInVec.
+    unsigned dim0Index = (outputSizes[0] + (elementsInVec - 1)) / elementsInVec;
     out_defs->indexSpaceGeometry.sizes[0] = dim0Index;
 
     /*************************************************************************************
@@ -73,26 +71,28 @@ gcapi::GlueCodeReturn_t LlamaSoftmaxPart3F32Gaudi2::GetGcDefinitions(
    // |                                        Index 0                            ....
    // -------------------------------------------------------------------------------------
 
-    // Index space mapping is calculated using start_a * x + start_b to end_a * x + end_b.
-    // x is the index space value. As we want single index space, we set end_b for input
-    // and output to input_size - 1.
+    // Index space mapping is calculated using f(i) = Ai + B
+    // 'i' is the index space member and A/B constants to be defined.
     out_defs->inputTensorAccessPattern[0].dim[0].dim      = 0;
-    out_defs->inputTensorAccessPattern[0].dim[0].start_a  = 0;
-    out_defs->inputTensorAccessPattern[0].dim[0].end_a    = 0;
+    out_defs->inputTensorAccessPattern[0].dim[0].start_a  = elementsInVec;
+    out_defs->inputTensorAccessPattern[0].dim[0].end_a    = elementsInVec;
     out_defs->inputTensorAccessPattern[0].dim[0].start_b  = 0;
-    out_defs->inputTensorAccessPattern[0].dim[0].end_b    = inputSizes[0] - 1;
+    out_defs->inputTensorAccessPattern[0].dim[0].end_b    = elementsInVec - 1;
 
+	// f_start f(i) = elementsInVec*i + 0;
+    // f_end   f(i) = elementsInVec*i + (elementsInVec - 1);
+    // Resource 0 (OFM) dim 0
     out_defs->outputTensorAccessPattern[0].dim[0].dim      = 0;
-    out_defs->outputTensorAccessPattern[0].dim[0].start_a  = 0;
-    out_defs->outputTensorAccessPattern[0].dim[0].end_a    = 0;
+    out_defs->outputTensorAccessPattern[0].dim[0].start_a  = elementsInVec;
+    out_defs->outputTensorAccessPattern[0].dim[0].end_a    = elementsInVec;
     out_defs->outputTensorAccessPattern[0].dim[0].start_b  = 0;
-    out_defs->outputTensorAccessPattern[0].dim[0].end_b    = inputSizes[0] - 1;
+    out_defs->outputTensorAccessPattern[0].dim[0].end_b    = elementsInVec - 1;
 
     /*************************************************************************************
     *    Stage IV -  define scalar parameters
     **************************************************************************************/
 	
-	/*************************************************************************************
+    /*************************************************************************************
     *    Stage V -  Load ISA into the descriptor.
     **************************************************************************************/
     unsigned IsaSize = (&_binary___llama_softmax_part3_f32_gaudi2_o_end - 
