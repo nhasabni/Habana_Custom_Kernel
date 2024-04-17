@@ -58,6 +58,27 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "llama_rmsnorm_part2_f32_gaudi2_test.hpp"
 #include "llama_silu_f32_gaudi2_test.hpp"
 
+#include "c2taco_dot_i32_gaudi2_test.hpp"
+#include "c2taco_lensq_i32_gaudi2_test.hpp"
+#include "c2taco_arraysum_i32_gaudi2_test.hpp"
+#include "c2taco_arraycube_i32_gaudi2_test.hpp"
+#include "c2taco_arrayfourth_i32_gaudi2_test.hpp"
+
+#include "c2taco_elemwise_plus_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_sub_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_mul_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_div_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_mul_add_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_sub_square_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_plus_scalar_mul_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_matrix_add_i32_gaudi2_test.hpp"
+#include "c2taco_elemwise_matrix_sub_i32_gaudi2_test.hpp"
+#include "c2taco_matscalar_mul_i32_gaudi2_test.hpp"
+#include "c2taco_vecscalar_add_i32_gaudi2_test.hpp"
+#include "c2taco_vecscalar_sub_i32_gaudi2_test.hpp"
+#include "c2taco_vecscalar_mul_i32_gaudi2_test.hpp"
+#include "c2taco_vecscalar_div_i32_gaudi2_test.hpp"
+
 int main(int argc, char** argv)
 {
     int result = 0;
@@ -124,7 +145,29 @@ int main(int argc, char** argv)
             "LlamaSoftmaxPart4F32Gaudi2Test  Run LLamaSoftmaxPart4Gaudi2Test only" << std::endl <<
             "LlamaRmsnormPart1F32Gaudi2Test  Run LLamaRmsnormPart1Gaudi2Test only" << std::endl <<
             "LlamaRmsnormPart2F32Gaudi2Test  Run LLamaRmsnormPart2Gaudi2Test only" << std::endl <<
-            "LlamaSiluF32Gaudi2Test          Run LLamaSiluGaudi2Test only" << std::endl;
+            "LlamaSiluF32Gaudi2Test          Run LLamaSiluGaudi2Test only" << std::endl <<
+
+            "C2TacoDotI32Gaudi2Test          Run C2TacoDotGaudi2Test only" << std::endl <<
+            "C2TacoLenSqI32Gaudi2Test        Run C2TacoLenSqGaudi2Test only" << std::endl <<
+            "C2TacoArraySumI32Gaudi2Test     Run C2TacoArraySumGaudi2Test only" << std::endl <<
+            "C2TacoArrayCubeI32Gaudi2Test    Run C2TacoArrayCubeGaudi2Test only" << std::endl <<
+            "C2TacoArrayFourthI32Gaudi2Test  Run C2TacoArrayFourthGaudi2Test only" << std::endl <<
+            "C2TacoElemwisePlusI32Gaudi2Test Run C2TacoElemwisePlusI32Gaudi2Test only" << std::endl <<
+            "C2TacoElemwiseSubI32Gaudi2Test  Run C2TacoElemwiseSubI32Gaudi2Test only" << std::endl <<
+            "C2TacoElemwiseMulI32Gaudi2Test  Run C2TacoElemwiseMulI32Gaudi2Test only" << std::endl <<
+            "C2TacoElemwiseDivI32Gaudi2Test  Run C2TacoElemwiseDivI32Gaudi2Test only" << std::endl <<
+            "C2TacoElemwiseMulAddI32Gaudi2Test Run C2TacoElemwiseMulAddI32Gaudi2Test only" << std::endl <<
+            "C2TacoElemwiseSubSquareI32Gaudi2Test  Run C2TacoElemwiseSubSquareI32Gaudi2Test only" << std::endl <<
+            "C2TacoElemwisePlusScalarMulI32Gaudi2Test Run C2TacoElemwisePlusScalarMulI32Gaudi2Test only" << std::endl <<
+
+            "C2TacoElemwiseMatrixAddI32Gaudi2Test  Run C2TacoElemwiseMatrixAddI32Gaudi2Test only" << std::endl <<
+            "C2TacoElemwiseMatrixSubI32Gaudi2Test  Run C2TacoElemwiseMatrixSubI32Gaudi2Test only" << std::endl <<
+            "C2TacoMatScalarMulI32Gaudi2Test  Run C2TacoMatScalarMulI32Gaudi2Test only" << std::endl <<
+
+            "C2TacoVecScalarAddI32Gaudi2Test  Run C2TacoVecScalarAddGaudi2Test only" << std::endl <<
+            "C2TacoVecScalarSubI32Gaudi2Test  Run C2TacoVecScalarSubGaudi2Test only" << std::endl << 
+            "C2TacoVecScalarMulI32Gaudi2Test  Run C2TacoVecScalarMulGaudi2Test only" << std::endl <<
+            "C2TacoVecScalarDivI32Gaudi2Test  Run C2TacoVecScalarDivGaudi2Test only" << std::endl;
 
         exit(0);
     }
@@ -967,6 +1010,359 @@ int main(int argc, char** argv)
             return result;
         }
     }
+
+    C2TacoDotI32Gaudi2Test c2tacodoti32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoDotI32Gaudi2Test") ==0))))
+    {
+        c2tacodoti32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacodoti32gaudi2ins.runTest(m);
+        c2tacodoti32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoLenSqI32Gaudi2Test c2tacolensqi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoLenSqI32Gaudi2Test") ==0))))
+    {
+        c2tacolensqi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacolensqi32gaudi2ins.runTest(m);
+        c2tacolensqi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoArraySumI32Gaudi2Test c2tacoarraysumi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoArraySumI32Gaudi2Test") ==0))))
+    {
+        c2tacoarraysumi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacoarraysumi32gaudi2ins.runTest(m);
+        c2tacoarraysumi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoArrayCubeI32Gaudi2Test c2tacoarraycubei32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoArrayCubeI32Gaudi2Test") ==0))))
+    {
+        c2tacoarraycubei32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacoarraycubei32gaudi2ins.runTest(m);
+        c2tacoarraycubei32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoArrayFourthI32Gaudi2Test c2tacoarrayfourthi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoArrayFourthI32Gaudi2Test") ==0))))
+    {
+        c2tacoarrayfourthi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacoarrayfourthi32gaudi2ins.runTest(m);
+        c2tacoarrayfourthi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwiseSubI32Gaudi2Test c2tacosubeqi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwiseSubI32Gaudi2Test") ==0))))
+    {
+        c2tacosubeqi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacosubeqi32gaudi2ins.runTest(m);
+        c2tacosubeqi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwiseSubSquareI32Gaudi2Test c2tacosubsqi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwiseSubSquareI32Gaudi2Test") ==0))))
+    {
+        c2tacosubsqi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacosubsqi32gaudi2ins.runTest(m);
+        c2tacosubsqi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwiseMulI32Gaudi2Test c2tacomuleqi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwiseMulI32Gaudi2Test") ==0))))
+    {
+        c2tacomuleqi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacomuleqi32gaudi2ins.runTest(m);
+        c2tacomuleqi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwisePlusI32Gaudi2Test c2tacopluseqi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwisePlusI32Gaudi2Test") ==0))))
+    {
+        c2tacopluseqi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacopluseqi32gaudi2ins.runTest(m);
+        c2tacopluseqi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwiseDivI32Gaudi2Test c2tacodiveqi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwiseDivI32Gaudi2Test") ==0))))
+    {
+        c2tacodiveqi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacodiveqi32gaudi2ins.runTest(m);
+        c2tacodiveqi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwiseMulAddI32Gaudi2Test c2tacomuladdi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwiseMulAddI32Gaudi2Test") ==0))))
+    {
+        c2tacomuladdi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        result = c2tacomuladdi32gaudi2ins.runTest(m);
+        c2tacomuladdi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwisePlusScalarMulI32Gaudi2Test c2tacoplussmuli32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwisePlusScalarMulI32Gaudi2Test") ==0))))
+    {
+        c2tacoplussmuli32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        int scalar = atoi(getenv("BLEND_S"));
+        result = c2tacoplussmuli32gaudi2ins.runTest(m, scalar);
+        c2tacoplussmuli32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwiseMatrixAddI32Gaudi2Test c2tacomataddi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwiseMatrixAddI32Gaudi2Test") ==0))))
+    {
+        c2tacomataddi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = c2tacomataddi32gaudi2ins.runTest(m, n);
+        c2tacomataddi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoElemwiseMatrixSubI32Gaudi2Test c2tacomatsubi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoElemwiseMatrixSubI32Gaudi2Test") ==0))))
+    {
+        c2tacomatsubi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        result = c2tacomatsubi32gaudi2ins.runTest(m, n);
+        c2tacomatsubi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoMatScalarMulI32Gaudi2Test c2tacomatscalarmuli32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoMatScalarMulI32Gaudi2Test") ==0))))
+    {
+        c2tacomatscalarmuli32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        size_t n = atoi(getenv("BLEND_N"));
+        int scalar = atoi(getenv("BLEND_S"));
+        result = c2tacomatscalarmuli32gaudi2ins.runTest(m, n, scalar);
+        c2tacomatscalarmuli32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoVecScalarAddI32Gaudi2Test c2tacovecscalaraddi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoVecScalarAddI32Gaudi2Test") ==0))))
+    {
+        c2tacovecscalaraddi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        int scalar = atoi(getenv("BLEND_S"));
+        result = c2tacovecscalaraddi32gaudi2ins.runTest(m, scalar);
+        c2tacovecscalaraddi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+    
+
+    C2TacoVecScalarSubI32Gaudi2Test c2tacovecscalarsubi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoVecScalarSubI32Gaudi2Test") ==0))))
+    {
+        c2tacovecscalarsubi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        int scalar = atoi(getenv("BLEND_S"));
+        result = c2tacovecscalarsubi32gaudi2ins.runTest(m, scalar);
+        c2tacovecscalarsubi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoVecScalarMulI32Gaudi2Test c2tacovecscalarmuli32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoVecScalarMulI32Gaudi2Test") ==0))))
+    {
+        c2tacovecscalarmuli32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        int scalar = atoi(getenv("BLEND_S"));
+        result = c2tacovecscalarmuli32gaudi2ins.runTest(m, scalar);
+        c2tacovecscalarmuli32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
+    C2TacoVecScalarDivI32Gaudi2Test c2tacovecscalardivi32gaudi2ins;
+    if(argc == 1 ||
+        (argc == 3 && (((strcmp(argv[1], "--device") ==0) || (strcmp(argv[1], "-d") ==0))
+        && (strcmp(argv[2],"Gaudi2") ==0)))  ||
+        (argc == 3 && (((strcmp(argv[1], "--test") ==0) || (strcmp(argv[1], "-t") ==0))
+        && (strcmp(argv[2],"C2TacoVecScalarDivI32Gaudi2Test") ==0))))
+    {
+        c2tacovecscalardivi32gaudi2ins.SetUp();
+        size_t m = atoi(getenv("BLEND_M"));
+        int scalar = atoi(getenv("BLEND_S"));
+        result = c2tacovecscalardivi32gaudi2ins.runTest(m, scalar);
+        c2tacovecscalardivi32gaudi2ins.TearDown();
+        testCount ++;
+        if (result != 0)
+        {
+            return result;
+        }
+    }
+
 
 
     std::cout << "All " << testCount  <<" tests pass!" <<std::endl;

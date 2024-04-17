@@ -56,6 +56,27 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "llama_rmsnorm_part2_f32_gaudi2.hpp"
 #include "llama_silu_f32_gaudi2.hpp"
 
+#include "c2taco_dot_i32_gaudi2.hpp"
+#include "c2taco_lensq_i32_gaudi2.hpp"
+#include "c2taco_arraysum_i32_gaudi2.hpp"
+#include "c2taco_arraycube_i32_gaudi2.hpp"
+#include "c2taco_arrayfourth_i32_gaudi2.hpp"
+#include "c2taco_elemwise_plus_i32_gaudi2.hpp"
+#include "c2taco_elemwise_sub_i32_gaudi2.hpp"
+#include "c2taco_elemwise_mul_i32_gaudi2.hpp"
+#include "c2taco_elemwise_div_i32_gaudi2.hpp"
+#include "c2taco_elemwise_mul_add_i32_gaudi2.hpp"
+#include "c2taco_elemwise_sub_square_i32_gaudi2.hpp"
+#include "c2taco_elemwise_plus_scalar_mul_i32_gaudi2.hpp"
+#include "c2taco_elemwise_matrix_add_i32_gaudi2.hpp"
+#include "c2taco_elemwise_matrix_sub_i32_gaudi2.hpp"
+#include "c2taco_matscalar_mul_i32_gaudi2.hpp"
+
+#include "c2taco_vecscalar_add_i32_gaudi2.hpp"
+#include "c2taco_vecscalar_sub_i32_gaudi2.hpp"
+#include "c2taco_vecscalar_mul_i32_gaudi2.hpp"
+#include "c2taco_vecscalar_div_i32_gaudi2.hpp"
+
 #include "entry_points.hpp"
 
 extern "C"
@@ -188,6 +209,46 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            llamarmsnormpart2f32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_RMSNORM_PART2_F32]);
            LlamaSiluF32Gaudi2 llamasiluf32g2Instance;
            llamasiluf32g2Instance.GetKernelName(names[GAUDI2_KERNEL_LLAMA_SILU_F32]);
+
+           C2TacoDotI32Gaudi2 c2tacodoti32g2Instance;
+           c2tacodoti32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_DOT_I32]);
+           C2TacoLenSqI32Gaudi2 c2tacolensqi32g2Instance;
+           c2tacolensqi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_LENSQ_I32]);
+           C2TacoArraySumI32Gaudi2 c2tacoarraysumi32g2Instance;
+           c2tacoarraysumi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ARRAYSUM_I32]);
+           C2TacoArrayCubeI32Gaudi2 c2tacoarraycubei32g2Instance;
+           c2tacoarraycubei32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ARRAYCUBE_I32]);
+           C2TacoArrayFourthI32Gaudi2 c2tacoarrayfourthi32g2Instance;
+           c2tacoarrayfourthi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ARRAYFOURTH_I32]);
+           C2TacoElemwiseSubI32Gaudi2 c2tacosubeqi32g2Instance;
+           c2tacosubeqi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_SUB_I32]);
+           C2TacoElemwiseMulI32Gaudi2 c2tacomuleqi32g2Instance;
+           c2tacomuleqi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_MUL_I32]);
+           C2TacoElemwisePlusI32Gaudi2 c2tacopluseqi32g2Instance;
+           c2tacopluseqi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_PLUS_I32]);
+           C2TacoElemwiseDivI32Gaudi2 c2tacodiveqi32g2Instance;
+           c2tacodiveqi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_DIV_I32]);
+           C2TacoElemwiseSubSquareI32Gaudi2 c2tacosubsqi32g2Instance;
+           c2tacosubsqi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_SUB_SQUARE_I32]);
+           C2TacoElemwiseMulAddI32Gaudi2 c2tacomuladdi32g2Instance;
+           c2tacomuladdi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_MUL_ADD_I32]);
+           C2TacoElemwisePlusScalarMulI32Gaudi2 c2tacoplussmuli32g2Instance;
+           c2tacoplussmuli32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_PLUS_SCALAR_MUL_I32]);
+           C2TacoElemwiseMatrixAddI32Gaudi2 c2tacomataddi32g2Instance;
+           c2tacomataddi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_MATRIX_ADD_I32]);
+           C2TacoElemwiseMatrixSubI32Gaudi2 c2tacomatsubi32g2Instance;
+           c2tacomatsubi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_ELEMWISE_MATRIX_SUB_I32]);
+           C2TacoMatScalarMulI32Gaudi2 c2tacomatscalarmuli32g2Instance;
+           c2tacomatscalarmuli32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_MATSCALAR_MUL_I32]);
+
+           C2TacoVecScalarAddI32Gaudi2 c2tacovecscalaraddi32g2Instance;
+           c2tacovecscalaraddi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_VECSCALAR_ADD_I32]);
+           C2TacoVecScalarSubI32Gaudi2 c2tacovecscalarsubi32g2Instance;
+           c2tacovecscalarsubi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_VECSCALAR_SUB_I32]);
+           C2TacoVecScalarMulI32Gaudi2 c2tacovecscalarmuli32g2Instance;
+           c2tacovecscalarmuli32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_VECSCALAR_MUL_I32]);
+           C2TacoVecScalarDivI32Gaudi2 c2tacovecscalardivi32g2Instance;
+           c2tacovecscalardivi32g2Instance.GetKernelName(names[GAUDI2_KERNEL_C2TACO_VECSCALAR_DIV_I32]);
         }
 
         if (kernelCount != nullptr)
@@ -586,6 +647,139 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
     if (strcmp(params->nodeName, kernelName) == 0)
     {
         return llamasiluf32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoDotI32Gaudi2 c2tacodoti32g2Instance;
+    c2tacodoti32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacodoti32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoLenSqI32Gaudi2 c2tacolensqi32g2Instance;
+    c2tacolensqi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacolensqi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoArraySumI32Gaudi2 c2tacoarraysumi32g2Instance;
+    c2tacoarraysumi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacoarraysumi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoArrayCubeI32Gaudi2 c2tacoarraycubei32g2Instance;
+    c2tacoarraycubei32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacoarraycubei32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoArrayFourthI32Gaudi2 c2tacoarrayfourthi32g2Instance;
+    c2tacoarrayfourthi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacoarrayfourthi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwiseSubI32Gaudi2 c2tacosubeqi32g2Instance;
+    c2tacosubeqi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacosubeqi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwiseMulI32Gaudi2 c2tacomuleqi32g2Instance;
+    c2tacomuleqi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacomuleqi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwisePlusI32Gaudi2 c2tacopluseqi32g2Instance;
+    c2tacopluseqi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacopluseqi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwiseDivI32Gaudi2 c2tacodiveqi32g2Instance;
+    c2tacodiveqi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacodiveqi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwiseMulAddI32Gaudi2 c2tacomuladdi32g2Instance;
+    c2tacomuladdi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacomuladdi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwiseSubSquareI32Gaudi2 c2tacosubsqi32g2Instance;
+    c2tacosubsqi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacosubsqi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwisePlusScalarMulI32Gaudi2 c2tacoelemwiseplussmuli32g2Instance;
+    c2tacoelemwiseplussmuli32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacoelemwiseplussmuli32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwiseMatrixAddI32Gaudi2 c2tacomataddi32g2Instance;
+    c2tacomataddi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacomataddi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoElemwiseMatrixSubI32Gaudi2 c2tacomatsubi32g2Instance;
+    c2tacomatsubi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacomatsubi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoMatScalarMulI32Gaudi2 c2tacomatscalarmuli32g2Instance;
+    c2tacomatscalarmuli32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacomatscalarmuli32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoVecScalarAddI32Gaudi2 c2tacovecscalaraddi32g2Instance;
+    c2tacovecscalaraddi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacovecscalaraddi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoVecScalarSubI32Gaudi2 c2tacovecscalarsubi32g2Instance;
+    c2tacovecscalarsubi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacovecscalarsubi32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoVecScalarMulI32Gaudi2 c2tacovecscalarmuli32g2Instance;
+    c2tacovecscalarmuli32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacovecscalarmuli32g2Instance.GetGcDefinitions(params, instance);
+    }
+
+    C2TacoVecScalarDivI32Gaudi2 c2tacovecscalardivi32g2Instance;
+    c2tacovecscalardivi32g2Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return c2tacovecscalardivi32g2Instance.GetGcDefinitions(params, instance);
     }
 
     return gcapi::GLUE_NODE_NOT_FOUND;
